@@ -105,7 +105,7 @@ function handleDrawOperationEvent() {
     drawVector(v4, "green");
   }
 
-  // mag norm angle
+  // mag norm angle area
   if (op === "mag") {
     console.log("Magnitude v1: " + v1.magnitude());
     console.log("Magnitude v2: " + v2.magnitude());
@@ -116,6 +116,8 @@ function handleDrawOperationEvent() {
     drawVector(v4, "green");
   } else if (op === "angle") {
     console.log("Angle: " + angleBetween(v1, v2));
+  } else if (op === "area") {
+    console.log("Area of the triangle: " + areaTriangle(v1, v2));
   }
 }
 
@@ -127,4 +129,11 @@ function angleBetween(v1, v2) {
   let radians = Math.acos(cosAlpha);
   let degrees = radians * (180/Math.PI);
   return degrees;
+}
+
+function areaTriangle(v1, v2) {
+  let cross = Vector3.cross(v1, v2);
+  let crossArea = cross.magnitude();
+  let triangleArea = crossArea * 0.5;
+  return triangleArea;
 }

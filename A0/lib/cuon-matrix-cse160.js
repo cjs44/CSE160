@@ -131,7 +131,14 @@ class Vector3 {
     static cross(other1, other2) {
         // Insert your code here.
         // This function should create and return a new vector.
-        let v3 = new Vector3(); // Modify this line to calculate cross product between other1 and other2.
+        let o1 = other1.elements;
+        let o2 = other2.elements;
+
+        let x = o1[1]*o2[2] - o1[2]*o2[1];
+        let y = o1[2]*o2[0] - o1[0]*o2[2];
+        let z = o1[0]*o2[1] - o1[1]*o2[0];
+
+        let v3 = new Vector3([x, y, z]); // Modify this line to calculate cross product between other1 and other2.
 
         // Don't delete the return statement.
         return v3;
