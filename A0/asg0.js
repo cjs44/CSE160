@@ -103,5 +103,16 @@ function handleDrawOperationEvent() {
     v4.mul(s);
     drawVector(v3, "green");
     drawVector(v4, "green");
-  }  
+  }
+
+  // mag norm
+  if (op === "mag") {
+    console.log("Magnitude v1: " + v1.magnitude());
+    console.log("Magnitude v2: " + v2.magnitude());
+  } else if (op === "norm") {
+    v3.normalize();
+    v4.normalize();
+    drawVector(v3, "green");
+    drawVector(v4, "green");
+  }
 }
