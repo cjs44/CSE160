@@ -2,8 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Draw a blue rectangle (canvas version)</title>
-    <script src="lib/cuon-matrix-cse160.js"></script>
+    <title>Assignment 0</title>
   </head>
 
   <body onload="main()">
@@ -11,5 +10,24 @@
       Please use a browser that supports "canvas"
     </canvas>
     <script src="asg0.js"></script>
+    <script src="lib/cuon-matrix-cse160.js"></script>
+    <br>
+    v1:
+    <label for="x1">x</label>
+    <input type="text" id="x1" name="x"
+      minlength="4" maxlength="8" size="10">
+    <label for="y1">y</label>
+    <input type="text" id="y1" name="y"
+      minlength="4" maxlength="8" size="10">
+    <br>
+    v2:
+    <label for="x2">x</label>
+    <input type="text" id="x2" name="x"
+      minlength="4" maxlength="8" size="10">
+    <label for="y2">y</label>
+    <input type="text" id="y2" name="y"
+      minlength="4" maxlength="8" size="10">
+    <br>
+    <input type="button" value="Draw" onclick="handleDrawEvent()"/>
   </body>
 </html>
