@@ -113,9 +113,12 @@ class Vector3 {
       * Calcualte the dop product between this vector and other.
       * @return scalar
       */
-    static dot(other1, other2) {
+    static dot(other) {
         // Insert your code here.
-        let d = 0; // Modify this line to calculate this vector's magnitude.
+        let t = this.elements;
+        let o = other.elements;
+
+        let d = t[0] * o[0] + t[1] * o[1] + t[2] * o[2];
 
         // Don't delete the return statement.
         return d;

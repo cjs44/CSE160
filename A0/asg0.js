@@ -105,7 +105,7 @@ function handleDrawOperationEvent() {
     drawVector(v4, "green");
   }
 
-  // mag norm
+  // mag norm angle
   if (op === "mag") {
     console.log("Magnitude v1: " + v1.magnitude());
     console.log("Magnitude v2: " + v2.magnitude());
@@ -114,5 +114,17 @@ function handleDrawOperationEvent() {
     v4.normalize();
     drawVector(v3, "green");
     drawVector(v4, "green");
+  } else if (op === "angle") {
+    console.log("Angle: " + angleBetween(v1, v2));
   }
+}
+
+function angleBetween(v1, v2) {
+  let dotProd = v1.dot(v2);
+  let mag1 = v1.magnitude();
+  let mag2 = v2.magnitude();
+  let cosAlpha = dotProd / (mag1*mag2);
+  let radians = Math.acos(cosAlpha);
+  let degrees = radians * (180/Math.PI);
+  return degrees;
 }
