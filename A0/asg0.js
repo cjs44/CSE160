@@ -120,7 +120,7 @@ function handleDrawOperationEvent() {
 }
 
 function angleBetween(v1, v2) {
-  let dotProd = v1.dot(v2);
+  let dotProd = Vector3.dot(v1, v2);
   let mag1 = v1.magnitude();
   let mag2 = v2.magnitude();
   let cosAlpha = dotProd / (mag1*mag2);
