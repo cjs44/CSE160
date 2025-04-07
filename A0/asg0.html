@@ -29,5 +29,19 @@
       minlength="4" maxlength="8" size="10">
     <br>
     <input type="button" value="Draw" onclick="handleDrawEvent()"/>
+    <br> <br>
+
+    <label for="op-select">Operation:</label>
+    <select name="operations" id="op-select">
+      <option value="add">Add</option>
+      <option value="sub">Subtract</option>
+      <option value="div">Divide</option>
+      <option value="mul">Multiply</option>
+    </select>
+    <label for="scalar">Scalar:</label>
+    <input type="text" id="scalar" name="scalar"
+      minlength="4" maxlength="8" size="10">
+    <br>
+    <input type="button" value="Draw" onclick="handleDrawOperationEvent()"/>
   </body>
 </html>
