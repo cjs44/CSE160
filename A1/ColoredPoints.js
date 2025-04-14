@@ -1,31 +1,41 @@
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'void main() {\n' +
-  '  gl_Position = a_Position;\n' +
-  '  gl_PointSize = 10.0;\n' +
-  '}\n';
+  `attribute vec4 a_Position;
+  void main() {
+    gl_Position = a_Position;
+    gl_PointSize = 20.0;
+  }`;
 
 // Fragment shader program
 var FSHADER_SOURCE =
-  'precision mediump float;\n' +
-  'uniform vec4 u_FragColor;\n' +  // uniform変数
-  'void main() {\n' +
-  '  gl_FragColor = u_FragColor;\n' +
-  '}\n';
+  `precision mediump float;
+  uniform vec4 u_FragColor;
+  void main() {
+    gl_FragColor = u_FragColor;
+  }`;
 
-function main() {
+// Global vars
+let canvas;
+let gl;
+let a_Position;
+let u_FragColor;
+
+// Setup WebGL with canvas
+function setupWebGL() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
-  var gl = getWebGLContext(canvas);
+  gl = getWebGLContext(canvas);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
+}
 
+// Connect vars to GLSL
+function connectVariablesToGLSL() {
   // Initialize shaders
   if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
     console.log('Failed to intialize shaders.');
@@ -40,14 +50,20 @@ function main() {
   }
 
   // Get the storage location of u_FragColor
-  var u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+  u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
   if (!u_FragColor) {
     console.log('Failed to get the storage location of u_FragColor');
     return;
   }
+}
+
+function main() {
+  // call setup and connect functs
+  setupWebGL();
+  connectVariablesToGLSL();
 
   // Register function (event handler) to be called on a mouse press
-  canvas.onmousedown = function(ev){ click(ev, gl, canvas, a_Position, u_FragColor) };
+  canvas.onmousedown = click;
 
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -58,16 +74,15 @@ function main() {
 
 var g_points = [];  // The array for the position of a mouse press
 var g_colors = [];  // The array to store the color of a point
-function click(ev, gl, canvas, a_Position, u_FragColor) {
-  var x = ev.clientX; // x coordinate of a mouse pointer
-  var y = ev.clientY; // y coordinate of a mouse pointer
-  var rect = ev.target.getBoundingClientRect();
 
-  x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
-  y = (canvas.height/2 - (y - rect.top))/(canvas.height/2);
+// ev is the event
+function click(ev) {
+  // call helper funct
+  [x,y] = convertCoordinatesForGL(ev);
 
   // Store the coordinates to g_points array
   g_points.push([x, y]);
+
   // Store the coordinates to g_points array
   if (x >= 0.0 && y >= 0.0) {      // First quadrant
     g_colors.push([1.0, 0.0, 0.0, 1.0]);  // Red
@@ -77,6 +92,22 @@ function click(ev, gl, canvas, a_Position, u_FragColor) {
     g_colors.push([1.0, 1.0, 1.0, 1.0]);  // White
   }
 
+  // call helper funct
+  renderAllShapes();
+}
+
+function convertCoordinatesForGL(ev) {
+  var x = ev.clientX; // x coordinate of a mouse pointer
+  var y = ev.clientY; // y coordinate of a mouse pointer
+  var rect = ev.target.getBoundingClientRect();
+
+  x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
+  y = (canvas.height/2 - (y - rect.top))/(canvas.height/2);
+
+  return([x,y]);
+}
+
+function renderAllShapes() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
 
