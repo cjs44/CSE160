@@ -57,10 +57,27 @@ function connectVariablesToGLSL() {
   }
 }
 
+// setup for HTML UI elements
+let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
+
+function addActionsForUI() {
+  // buttons
+  // document.getElementById('green').onclick = function () { g_selectedColor = [0.0, 1.0, 0.0, 1.0]; };
+  // document.getElementById('red').onclick = function () { g_selectedColor = [1.0, 0.0, 0.0, 1.0]; };
+
+  // sliders
+  document.getElementById('redSlide').addEventListener('mouseup', function () { g_selectedColor[0] = this.value/100; });
+  document.getElementById('greenSlide').addEventListener('mouseup', function () { g_selectedColor[1] = this.value/100; });
+  document.getElementById('blueSlide').addEventListener('mouseup', function () { g_selectedColor[2] = this.value/100; });
+}
+
 function main() {
   // call setup and connect functs
   setupWebGL();
   connectVariablesToGLSL();
+
+  // setup for HTML UI
+  addActionsForUI();
 
   // Register function (event handler) to be called on a mouse press
   canvas.onmousedown = click;
@@ -78,19 +95,21 @@ var g_colors = [];  // The array to store the color of a point
 // ev is the event
 function click(ev) {
   // call helper funct
-  [x,y] = convertCoordinatesForGL(ev);
+  [x, y] = convertCoordinatesForGL(ev);
 
   // Store the coordinates to g_points array
   g_points.push([x, y]);
 
-  // Store the coordinates to g_points array
-  if (x >= 0.0 && y >= 0.0) {      // First quadrant
-    g_colors.push([1.0, 0.0, 0.0, 1.0]);  // Red
-  } else if (x < 0.0 && y < 0.0) { // Third quadrant
-    g_colors.push([0.0, 1.0, 0.0, 1.0]);  // Green
-  } else {                         // Others
-    g_colors.push([1.0, 1.0, 1.0, 1.0]);  // White
-  }
+  // Store the colors to g_colors array
+  g_colors.push(g_selectedColor.slice());
+
+  // if (x >= 0.0 && y >= 0.0) {      // First quadrant
+  //   g_colors.push([1.0, 0.0, 0.0, 1.0]);  // Red
+  // } else if (x < 0.0 && y < 0.0) { // Third quadrant
+  //   g_colors.push([0.0, 1.0, 0.0, 1.0]);  // Green
+  // } else {                         // Others
+  //   g_colors.push([1.0, 1.0, 1.0, 1.0]);  // White
+  // }
 
   // call helper funct
   renderAllShapes();
@@ -101,10 +120,10 @@ function convertCoordinatesForGL(ev) {
   var y = ev.clientY; // y coordinate of a mouse pointer
   var rect = ev.target.getBoundingClientRect();
 
-  x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
-  y = (canvas.height/2 - (y - rect.top))/(canvas.height/2);
+  x = ((x - rect.left) - canvas.width / 2) / (canvas.width / 2);
+  y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
 
-  return([x,y]);
+  return ([x, y]);
 }
 
 function renderAllShapes() {
@@ -112,7 +131,7 @@ function renderAllShapes() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   var len = g_points.length;
-  for(var i = 0; i < len; i++) {
+  for (var i = 0; i < len; i++) {
     var xy = g_points[i];
     var rgba = g_colors[i];
 
