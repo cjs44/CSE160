@@ -14,6 +14,8 @@ class Point {
       // var xy = g_shapesList[i].position;
       // var rgba = g_shapesList[i].color;
       // var size = g_shapesList[i].size;
+
+      gl.disableVertexAttribArray(a_Position);
   
       // Pass the position of a point to a_Position variable
       gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
