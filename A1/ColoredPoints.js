@@ -30,7 +30,7 @@ function setupWebGL() {
 
   // Get the rendering context for WebGL
   // gl = getWebGLContext(canvas);
-  gl = canvas.getContext("webgl", { preserveDrawingBuffer: true});
+  gl = canvas.getContext("webgl", { preserveDrawingBuffer: true });
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
@@ -46,7 +46,7 @@ function connectVariablesToGLSL() {
   }
 
   // // Get the storage location of a_Position
-  var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+  a_Position = gl.getAttribLocation(gl.program, 'a_Position');
   if (a_Position < 0) {
     console.log('Failed to get the storage location of a_Position');
     return;
@@ -84,21 +84,24 @@ function addActionsForUI() {
   // document.getElementById('red').onclick = function () { g_selectedColor = [1.0, 0.0, 0.0, 1.0]; };
 
   // clear button
-  document.getElementById('clear').onclick = function () { g_shapesList = []; renderAllShapes();};
+  document.getElementById('clear').onclick = function () { g_shapesList = []; renderAllShapes(); };
 
   // drawing modes
-  document.getElementById('square').onclick = function () { g_selectedType = POINT;};
-  document.getElementById('triangle').onclick = function () { g_selectedType = TRIANGLE;};
-  document.getElementById('circle').onclick = function () { g_selectedType = CIRCLE;};
+  document.getElementById('square').onclick = function () { g_selectedType = POINT; };
+  document.getElementById('triangle').onclick = function () { g_selectedType = TRIANGLE; };
+  document.getElementById('circle').onclick = function () { g_selectedType = CIRCLE; };
 
   // sliders
-  document.getElementById('redSlide').addEventListener('mouseup', function () { g_selectedColor[0] = this.value/100; });
-  document.getElementById('greenSlide').addEventListener('mouseup', function () { g_selectedColor[1] = this.value/100; });
-  document.getElementById('blueSlide').addEventListener('mouseup', function () { g_selectedColor[2] = this.value/100; });
+  document.getElementById('redSlide').addEventListener('mouseup', function () { g_selectedColor[0] = this.value / 100; });
+  document.getElementById('greenSlide').addEventListener('mouseup', function () { g_selectedColor[1] = this.value / 100; });
+  document.getElementById('blueSlide').addEventListener('mouseup', function () { g_selectedColor[2] = this.value / 100; });
   // size slider
   document.getElementById('sizeSlide').addEventListener('mouseup', function () { g_selectedSize = this.value; });
   // segment slider
   document.getElementById('segSlide').addEventListener('mouseup', function () { g_selectedSegment = this.value; });
+
+  // draw duck
+  document.getElementById('duck').onclick = drawDuck;
 }
 
 function main() {
@@ -111,7 +114,7 @@ function main() {
 
   // Register function (event handler) to be called on a mouse press
   canvas.onmousedown = click;
-  canvas.onmousemove = function(ev) { if(ev.buttons == 1) { click(ev)}};
+  canvas.onmousemove = function (ev) { if (ev.buttons == 1) { click(ev) } };
 
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -191,4 +194,70 @@ function renderAllShapes() {
   for (var i = 0; i < len; i++) {
     g_shapesList[i].render();
   }
+}
+
+// function to draw my duck
+function drawDuck() {
+  // clear canvas
+  g_shapesList = []
+
+  // yellow, black, orange, blue
+  const colorList = [
+    [1.0, 0.8, 0.0, 1.0],
+    [0.0, 0.0, 0.0, 1.0],
+    [1.0, 0.6, 0.0, 1.0],
+    [0.0, 0.3, 0.9, 1.0]
+  ];
+  
+  const yellowPoints = [
+    [-0.3, -0.2, -0.1, 0.0, -0.5, 0.0],
+    [-0.3, 0.2, -0.1, 0.0, -0.5, 0.0],
+    [-0.3, -0.2, 0.1, -0.2, -0.1, 0.0],
+    [0.1, -0.2, 0.3, 0.0, -0.1, 0.0],
+    [-0.1, 0.0, 0.3, 0.0, 0.1, 0.1],
+    [-0.1, 0.0, 0.1, 0.1, -0.2, 0.1],
+    [0.3, 0.0, 0.3, 0.2, 0.1, 0.1],
+    [-0.2, 0.1, -0.05, 0.25, -0.4, 0.25],
+    [-0.4, 0.25, -0.05, 0.25, -0.25, 0.4]
+  ];
+  for (let i = 0; i < yellowPoints.length; i++) {
+    var duck = new DuckTriangle();
+    duck.color = colorList[0];
+    duck.position = yellowPoints[i];
+    g_shapesList.push(duck);
+  }
+
+  const blackPoints = [
+    [-0.3, 0.25, -0.25, 0.25, -0.28, 0.28],
+    [-0.3, 0.25,  -0.25, 0.25,  -0.28, 0.22]
+  ];
+  for (let i = 0; i < blackPoints.length; i++) {
+    var duck = new DuckTriangle();
+    duck.color = colorList[1];
+    duck.position = blackPoints[i];
+    g_shapesList.push(duck);
+  }
+
+  const orangePoints = [
+    [-0.3, 0.18, -0.4, 0.25, -0.45, 0.18],
+    [-0.4, 0.25, -0.5, 0.25, -0.35, 0.18]
+  ];
+  for (let i = 0; i < orangePoints.length; i++) {
+    var duck = new DuckTriangle();
+    duck.color = colorList[2];
+    duck.position = orangePoints[i];
+    g_shapesList.push(duck);
+  }
+  
+  const bluePoints = [
+    [-0.3, -0.2, -0.7, -0.2, -0.5, 0.0],
+  ];
+  for (let i = 0; i < bluePoints.length; i++) {
+    var duck = new DuckTriangle();
+    duck.color = colorList[3];
+    duck.position = bluePoints[i];
+    g_shapesList.push(duck);
+  }
+
+  renderAllShapes();
 }
