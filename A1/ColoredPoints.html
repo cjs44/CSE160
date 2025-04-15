@@ -11,6 +11,7 @@
     </canvas>
 
     <div>
+      Shape Color: <br>
       <label for="redSlide">Red</label>
       <input
         type="range"
@@ -18,7 +19,7 @@
         name="redSlide"
         min="0"
         max="100"
-        value="0" />
+        value="100" />
 
       <label for="greenSlide">Green</label>
       <input
@@ -27,7 +28,7 @@
         name="greenSlide"
         min="0"
         max="100"
-        value="0" />
+        value="100" />
       
       <label for="blueSlide">Blue</label>
       <input
@@ -36,7 +37,18 @@
         name="blueSlide"
         min="0"
         max="100"
-        value="0" />
+        value="100" />
+    </div>
+
+    <div>
+      <label for="sizeSlide">Shape Size:</label>
+      <input
+        type="range"
+        id="sizeSlide"
+        name="sizeSlide"
+        min="5"
+        max="40"
+        value="10" />
     </div>
 
     <script src="../lib/webgl-utils.js"></script>
