@@ -1,72 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Change a point color</title>
-  </head>
 
-  <body onload="main()">
-    <canvas id="webgl" width="400" height="400">
+<head>
+  <meta charset="utf-8" />
+  <title>Change a point color</title>
+</head>
+
+<body onload="main()">
+  <canvas id="webgl" width="400" height="400">
     Please use a browser that supports "canvas"
-    </canvas>
+  </canvas>
 
-    <div>
-      <input type="button" id="clear" value="Clear Canvas"/>
-    </div>
-    <br>
-    <div>
-      Drawing Mode: <br>
-      <input type="button" id="square" value="Squares"/>
-      <input type="button" id="triangle" value="Triangles"/>
-      <input type="button" id="circle" value="Circles"/>
-    </div>
-    <br>
-    <div>
-      Shape Color: <br>
-      <label for="redSlide">Red</label>
-      <input
-        type="range"
-        id="redSlide"
-        name="redSlide"
-        min="0"
-        max="100"
-        value="100" />
+  <div>
+    <input type="button" id="clear" value="Clear Canvas" />
+  </div>
+  <br>
+  <div>
+    Drawing Mode: <br>
+    <input type="button" id="square" value="Squares" />
+    <input type="button" id="triangle" value="Triangles" />
+    <input type="button" id="circle" value="Circles" />
+  </div>
+  <br>
+  <div>
+    Shape Color: <br>
+    <label for="redSlide">Red</label>
+    <input type="range" id="redSlide" name="redSlide" min="0" max="100" value="100" />
 
-      <label for="greenSlide">Green</label>
-      <input
-        type="range"
-        id="greenSlide"
-        name="greenSlide"
-        min="0"
-        max="100"
-        value="100" />
-      
-      <label for="blueSlide">Blue</label>
-      <input
-        type="range"
-        id="blueSlide"
-        name="blueSlide"
-        min="0"
-        max="100"
-        value="100" />
-    </div>
-    <br>
-    <div>
-      <label for="sizeSlide">Shape Size:</label>
-      <input
-        type="range"
-        id="sizeSlide"
-        name="sizeSlide"
-        min="5"
-        max="40"
-        value="10" />
-    </div>
+    <label for="greenSlide">Green</label>
+    <input type="range" id="greenSlide" name="greenSlide" min="0" max="100" value="100" />
 
-    <script src="../lib/webgl-utils.js"></script>
-    <script src="../lib/webgl-debug.js"></script>
-    <script src="../lib/cuon-utils.js"></script>
-    <script src="Point.js"></script>
-    <script src="Triangle.js"></script>
-    <script src="ColoredPoints.js"></script>
-  </body>
+    <label for="blueSlide">Blue</label>
+    <input type="range" id="blueSlide" name="blueSlide" min="0" max="100" value="100" />
+  </div>
+  <br>
+  <div>
+    <label for="sizeSlide">Shape Size:</label>
+    <input type="range" id="sizeSlide" name="sizeSlide" min="5" max="40" value="10" />
+    <label for="segSlide">(Circles) Segment Count:</label>
+    <input type="range" id="segSlide" name="segSlide" min="10" max="40" value="10" />
+  </div>
+
+  <script src="../lib/webgl-utils.js"></script>
+  <script src="../lib/webgl-debug.js"></script>
+  <script src="../lib/cuon-utils.js"></script>
+  <script src="Point.js"></script>
+  <script src="Triangle.js"></script>
+  <script src="Circle.js"></script>
+  <script src="ColoredPoints.js"></script>
+</body>
+
 </html>

@@ -76,6 +76,7 @@ const CIRCLE = 2;
 let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
 let g_selectedSize = 10.0;
 let g_selectedType = POINT;
+let g_selectedSegment = 10;
 
 function addActionsForUI() {
   // buttons
@@ -88,7 +89,7 @@ function addActionsForUI() {
   // drawing modes
   document.getElementById('square').onclick = function () { g_selectedType = POINT;};
   document.getElementById('triangle').onclick = function () { g_selectedType = TRIANGLE;};
-  // document.getElementById('circle').onclick = function () { g_selectedType = CIRCLE;};
+  document.getElementById('circle').onclick = function () { g_selectedType = CIRCLE;};
 
   // sliders
   document.getElementById('redSlide').addEventListener('mouseup', function () { g_selectedColor[0] = this.value/100; });
@@ -96,6 +97,8 @@ function addActionsForUI() {
   document.getElementById('blueSlide').addEventListener('mouseup', function () { g_selectedColor[2] = this.value/100; });
   // size slider
   document.getElementById('sizeSlide').addEventListener('mouseup', function () { g_selectedSize = this.value; });
+  // segment slider
+  document.getElementById('segSlide').addEventListener('mouseup', function () { g_selectedSegment = this.value; });
 }
 
 function main() {
@@ -134,13 +137,16 @@ function click(ev) {
     point = new Point();
   } else if (g_selectedType == TRIANGLE) {
     point = new Triangle();
+  } else {
+    point = new Circle();
   }
-  // else {
-  // point = new CIRCLE();
-  // }
+
   point.position = [x, y];
   point.color = g_selectedColor.slice();
   point.size = g_selectedSize;
+  if (g_selectedType == CIRCLE) {
+    point.segments = g_selectedSegment;
+  }
   g_shapesList.push(point);
 
   // Store the coordinates to g_points array
