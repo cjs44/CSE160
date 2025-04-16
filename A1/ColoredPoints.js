@@ -125,10 +125,6 @@ function main() {
 
 var g_shapesList = [];
 
-// var g_points = [];  // The array for the position of a mouse press
-// var g_colors = [];  // The array to store the color of a point
-// var g_sizes = [];   // array to store the size of a point
-
 // ev is the event
 function click(ev) {
   // call helper funct
@@ -151,23 +147,6 @@ function click(ev) {
     point.segments = g_selectedSegment;
   }
   g_shapesList.push(point);
-
-  // Store the coordinates to g_points array
-  // g_points.push([x, y]);
-
-  // // Store the colors to g_colors array
-  // g_colors.push(g_selectedColor.slice());
-
-  // // Store the size to g_sizes array
-  // g_sizes.push(g_selectedSize);
-
-  // if (x >= 0.0 && y >= 0.0) {      // First quadrant
-  //   g_colors.push([1.0, 0.0, 0.0, 1.0]);  // Red
-  // } else if (x < 0.0 && y < 0.0) { // Third quadrant
-  //   g_colors.push([0.0, 1.0, 0.0, 1.0]);  // Green
-  // } else {                         // Others
-  //   g_colors.push([1.0, 1.0, 1.0, 1.0]);  // White
-  // }
 
   // call helper funct
   renderAllShapes();
@@ -251,6 +230,14 @@ function drawDuck() {
   
   const bluePoints = [
     [-0.3, -0.2, -0.7, -0.2, -0.5, 0.0],
+    [-0.7, -0.2, -0.5, 0.0, -0.9, 0.0],
+    [-0.3, -0.2, -0.7, -0.2, -0.5, -0.4],
+    [-0.1, -0.4, -0.5, -0.4, -0.3, -0.2],
+    [0.1, -0.2, -0.3, -0.2, -0.1, -0.4],
+    [0.3, -0.4, -0.1, -0.4, 0.1, -0.2],
+    [0.5, -0.2, 0.1, -0.2, 0.3, -0.4],
+    [0.5, -0.2, 0.1, -0.2, 0.3, 0.0],
+    [0.3, 0.0, 0.5, -0.2, 0.7, 0.0]
   ];
   for (let i = 0; i < bluePoints.length; i++) {
     var duck = new DuckTriangle();
