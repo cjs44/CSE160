@@ -74,6 +74,7 @@ const POINT = 0;
 const TRIANGLE = 1;
 const CIRCLE = 2;
 const FUN = 3;
+const ERASE = 4;
 
 // global vars for HTML UI elements
 let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
@@ -94,7 +95,7 @@ function addActionsForUI() {
   document.getElementById('triangle').onclick = function () { g_selectedType = TRIANGLE; };
   document.getElementById('circle').onclick = function () { g_selectedType = CIRCLE; };
   document.getElementById('fun').onclick = function () { g_selectedType = FUN; };
-
+  document.getElementById('erase').onclick = function () { g_selectedType = ERASE; };
 
   // sliders
   document.getElementById('redSlide').addEventListener('mouseup', function () { g_selectedColor[0] = this.value / 100; });
@@ -145,6 +146,8 @@ function click(ev) {
     point = new Circle();
   } else if (g_selectedType == FUN) {
     point = new Fun();
+  } else {
+    point = new Erase();
   }
 
   point.position = [x, y];
