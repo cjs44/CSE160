@@ -19,7 +19,7 @@ class Circle {
 
         // Draw
         // gl.drawArrays(gl.POINTS, 0, 1);
-        var d = this.size/200.0;
+        var d = size/200.0;
 
         let angleStep = 360/this.segments;
         for (var angle = 0; angle < 360; angle += angleStep) {

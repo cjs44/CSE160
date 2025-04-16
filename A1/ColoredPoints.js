@@ -1,3 +1,5 @@
+// AWESOMENESS: adding a fun brush and an 'eraser'
+
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -71,6 +73,7 @@ function connectVariablesToGLSL() {
 const POINT = 0;
 const TRIANGLE = 1;
 const CIRCLE = 2;
+const FUN = 3;
 
 // global vars for HTML UI elements
 let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
@@ -90,6 +93,8 @@ function addActionsForUI() {
   document.getElementById('square').onclick = function () { g_selectedType = POINT; };
   document.getElementById('triangle').onclick = function () { g_selectedType = TRIANGLE; };
   document.getElementById('circle').onclick = function () { g_selectedType = CIRCLE; };
+  document.getElementById('fun').onclick = function () { g_selectedType = FUN; };
+
 
   // sliders
   document.getElementById('redSlide').addEventListener('mouseup', function () { g_selectedColor[0] = this.value / 100; });
@@ -136,8 +141,10 @@ function click(ev) {
     point = new Point();
   } else if (g_selectedType == TRIANGLE) {
     point = new Triangle();
-  } else {
+  } else if (g_selectedType == CIRCLE) {
     point = new Circle();
+  } else if (g_selectedType == FUN) {
+    point = new Fun();
   }
 
   point.position = [x, y];
