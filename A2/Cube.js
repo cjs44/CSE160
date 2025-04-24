@@ -1,3 +1,6 @@
+// So it doesn't create a buffer every time
+let buffer = null;
+
 class Cube {
     constructor() {
         this.type = 'cube';
@@ -69,15 +72,17 @@ function drawCube(M) {
     ]);
     var n = 36; // The number of vertices
 
-    // Create a buffer object
-    var vertexBuffer = gl.createBuffer();
-    if (!vertexBuffer) {
-        console.log('Failed to create the buffer object');
-        return -1;
+    if (buffer === null){
+        // Create a buffer object
+        buffer = gl.createBuffer();
+        if (!buffer) {
+            console.log('Failed to create the buffer object');
+            return -1;
+        }
     }
 
     // Bind the buffer object to target
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     // Write date into the buffer object
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
     // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
