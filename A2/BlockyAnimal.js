@@ -126,6 +126,15 @@ function renderScene() {
   body.matrix.scale(0.7, 0.4, 0.4);
   body.render();
 
+  var belly = new Cube();
+  belly.color = [0.45, 0.30, 0.16, 1.0];
+  belly.matrix.translate(-0.3, -0.13, -0.02);
+  belly.matrix.scale(0.74, 0.25, 0.02);
+  belly.render();
+
+  // eye1.matrix.translate(0.55, -0.09, 0.07);
+  // eye1.matrix.scale(0.03, 0.03, 0.02);
+
   var tail1 = new Cube();
   tail1.color = [0.24, 0.12, 0.04, 1.0];
   tail1.matrix.translate(-0.65, -0.15, 0.05);
@@ -137,6 +146,68 @@ function renderScene() {
   tail2.matrix.translate(-0.9, -0.125, 0.075);
   tail2.matrix.scale(0.25, 0.25, 0.25);
   tail2.render();
+
+  var neck = new Cube();
+  neck.color = [0.24, 0.12, 0.04, 1.0];
+  neck.matrix.translate(0.35, -0.175, 0.05);
+  neck.matrix.scale(0.1, 0.35, 0.3);
+  neck.render();
+
+  var head = new Cube();
+  head.color = [0.45, 0.30, 0.16, 1.0];
+  head.matrix.translate(0.45, -0.15, 0.075);
+  head.matrix.scale(0.2, 0.3, 0.3);
+  head.render();
+
+  var eye1 = new Cube();
+  eye1.color = [0.0, 0.0, 0.0, 1.0];
+  eye1.matrix.translate(0.55, -0.09, 0.07);
+  eye1.matrix.scale(0.03, 0.03, 0.02);
+  eye1.render();
+
+  var eye2 = new Cube();
+  eye2.color = [0.0, 0.0, 0.0, 1.0];
+  eye2.matrix.translate(0.55, 0.04, 0.07);
+  eye2.matrix.scale(0.03, 0.03, 0.02);
+  eye2.render();
+
+  var nose = new Cube();
+  nose.color = [0.23, 0.15, 0.10, 1.0];
+  nose.matrix.translate(0.5, -0.03, 0.07);
+  nose.matrix.scale(0.05, 0.05, 0.02);
+  nose.render();
+
+  // top right
+  var arm1 = new Cube();
+  arm1.color = [0.23, 0.11, 0.03, 1.0];
+  arm1.matrix.translate(0.2, 0.12, 0.1);
+  arm1.matrix.rotate(35, 0, 0, 1);
+  arm1.matrix.scale(0.15, 0.2, 0.2);
+  arm1.render();
+
+  // top left
+  var leg1 = new Cube();
+  leg1.color = [0.23, 0.11, 0.03, 1.0];
+  leg1.matrix.translate(-0.3, 0.1, 0.1);
+  leg1.matrix.rotate(45, 0, 0, 1);
+  leg1.matrix.scale(0.15, 0.25, 0.2);
+  leg1.render();
+
+  // bottom right
+  var arm1 = new Cube();
+  arm1.color = [0.23, 0.11, 0.03, 1.0];
+  arm1.matrix.translate(0.33, -0.21, 0.1);
+  arm1.matrix.rotate(145, 0, 0, 1);
+  arm1.matrix.scale(0.15, 0.2, 0.2);
+  arm1.render();
+
+  // bottom left
+  var leg2 = new Cube();
+  leg2.color = [0.23, 0.11, 0.03, 1.0];
+  leg2.matrix.translate(-0.2, -0.2, 0.1);
+  leg2.matrix.rotate(135, 0, 0, 1);
+  leg2.matrix.scale(0.15, 0.25, 0.2);
+  leg2.render();
 
   var duration = performance.now() - startTime;
   sendTextToHTML("fps: " + Math.floor(10000/duration)/10, "fps");
