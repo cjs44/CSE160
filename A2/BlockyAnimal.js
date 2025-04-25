@@ -1,3 +1,5 @@
+// This is supposed to be an otter
+
 // AWESOMENESS: 
 
 // ColoredPoint.js (c) 2012 matsuda
@@ -81,10 +83,16 @@ function connectVariablesToGLSL() {
 }
 
 let g_globalAngle = 0;
+let g_joint1Angle = 0;
+let g_joint2Angle = 0;
 
 function addActionsForUI() {
   // angle slider
   document.getElementById('angleSlide').addEventListener('input', function () { g_globalAngle = this.value; renderScene();});
+  // joint 1 - tail base - angle
+  document.getElementById('joint1Slide').addEventListener('input', function () { g_joint1Angle = this.value; renderScene();});
+  // joint 2 - tail end - angle
+  document.getElementById('joint2Slide').addEventListener('input', function () { g_joint2Angle = this.value; renderScene();});
 }
 
 function main() {
@@ -108,8 +116,8 @@ function sendTextToHTML(text, htmlID) {
     htmlElement.innerText = text;
   }
 }
-
 function renderScene() {
+
   var startTime = performance.now();
 
   // camera angle
@@ -137,14 +145,19 @@ function renderScene() {
 
   var tail1 = new Cube();
   tail1.color = [0.24, 0.12, 0.04, 1.0];
-  tail1.matrix.translate(-0.65, -0.15, 0.05);
-  tail1.matrix.scale(0.3, 0.3, 0.3);
+  tail1.matrix.translate(-0.15, 0.15, 0.05);
+  tail1.matrix.rotate(180, 0, 0, 1);
+  tail1.matrix.rotate(g_joint1Angle, 0, 0, 1);
+  var tailCoordMat = new Matrix4(tail1.matrix);
+  tail1.matrix.scale(0.5, 0.3, 0.3);
   tail1.render();
 
   var tail2 = new Cube();
   tail2.color = [0.23, 0.11, 0.03, 1.0];
-  tail2.matrix.translate(-0.9, -0.125, 0.075);
-  tail2.matrix.scale(0.25, 0.25, 0.25);
+  tail2.matrix = tailCoordMat;
+  tail2.matrix.translate(0.35, 0.025, 0.025);
+  tail2.matrix.rotate(g_joint2Angle, 0, 0, 1);
+  tail2.matrix.scale(0.35, 0.25, 0.25);
   tail2.render();
 
   var neck = new Cube();
