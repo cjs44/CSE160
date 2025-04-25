@@ -14,22 +14,37 @@
     <p id="fps"></p>
   </div>
   <div>
+    <label for="angleSlide">Camera Angle:</label>
+    <input type="range" id="angleSlide" name="angleSlide" min="0" max="360" value="0" />
+  </div>
+  <br>
+  <div>
     <label for="joint1Slide">Tail Base Joint:</label>
     <input type="range" id="joint1Slide" name="joint1Slide" min="-35" max="25" value="0" />
     Animation:
     <input type="button" id="joint1On" value="On" />
     <input type="button" id="joint1Off" value="Off" />
     <br>
+
     <label for="joint2Slide">Tail End Joint:</label>
     <input type="range" id="joint2Slide" name="joint2Slide" min="-15" max="15" value="0" />
     Animation:
     <input type="button" id="joint2On" value="On" />
     <input type="button" id="joint2Off" value="Off" />
-  </div>
-  <br>
-  <div>
-    <label for="angleSlide">Camera Angle:</label>
-    <input type="range" id="angleSlide" name="angleSlide" min="0" max="360" value="0" />
+    <br>
+
+    <label for="rightArmSlide">Right Arm Joint:</label>
+    <input type="range" id="rightArmSlide" name="rightArmSlide" min="-15" max="15" value="0" />
+    Animation:
+    <input type="button" id="rightArmOn" value="On" />
+    <input type="button" id="rightArmOff" value="Off" />
+    <br>
+
+    <label for="leftArmSlide">Left Arm Joint:</label>
+    <input type="range" id="leftArmSlide" name="leftArmSlide" min="-15" max="15" value="0" />
+    Animation:
+    <input type="button" id="leftArmOn" value="On" />
+    <input type="button" id="leftArmOff" value="Off" />
   </div>
 
   <script src="lib/webgl-utils.js"></script>

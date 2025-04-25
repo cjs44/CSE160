@@ -85,22 +85,37 @@ function connectVariablesToGLSL() {
 let g_globalAngle = 0;
 let g_joint1Angle = 0;
 let g_joint2Angle = 0;
+let g_rightArmAngle = 0;
+let g_leftArmAngle = 0;
+
 let g_animateJoint1 = false;
 let g_animateJoint2 = false;
+let g_animateRightArm = false;
+let g_animateLeftArm = false;
 
 function addActionsForUI() {
-  // angle slider
+  // camera angle slider
   document.getElementById('angleSlide').addEventListener('input', function () { g_globalAngle = this.value; renderScene(); });
   // joint 1 - tail base - angle
   document.getElementById('joint1Slide').addEventListener('input', function () { g_joint1Angle = this.value; renderScene(); });
-  // joint 2 - tail end - angle
-  document.getElementById('joint2Slide').addEventListener('input', function () { g_joint2Angle = this.value; renderScene(); });
-  // animate buttons - joint 1
+  // joint 1 - animate buttons
   document.getElementById('joint1On').onclick = function () { g_animateJoint1 = true; };
   document.getElementById('joint1Off').onclick = function () { g_animateJoint1 = false; };
-  // animate buttons - joint 2
+  // joint 2 - tail end - angle
+  document.getElementById('joint2Slide').addEventListener('input', function () { g_joint2Angle = this.value; renderScene(); });
+  // joint 2 - animate buttons
   document.getElementById('joint2On').onclick = function () { g_animateJoint2 = true; };
   document.getElementById('joint2Off').onclick = function () { g_animateJoint2 = false; };
+  // right arm - angle
+  document.getElementById('rightArmSlide').addEventListener('input', function () { g_rightArmAngle = this.value; renderScene(); });
+  // right arm - animate buttons
+  document.getElementById('rightArmOn').onclick = function () { g_animateRightArm = true; };
+  document.getElementById('rightArmOff').onclick = function () { g_animateRightArm = false; };
+  // left arm - angle
+  document.getElementById('leftArmSlide').addEventListener('input', function () { g_leftArmAngle = this.value; renderScene(); });
+  // left arm - animate buttons
+  document.getElementById('leftArmOn').onclick = function () { g_animateLeftArm = true; };
+  document.getElementById('leftArmOff').onclick = function () { g_animateLeftArm = false; };
 }
 
 function main() {
@@ -131,9 +146,13 @@ function tick() {
 
 function updateAnimationAngles() {
   if (g_animateJoint1) {
-    g_joint1Angle = 25 * Math.sin(g_seconds);
+    g_joint1Angle = 15 * Math.sin(g_seconds);
   } if (g_animateJoint2) {
-    g_joint2Angle = 15 * Math.sin(2 * g_seconds);
+    g_joint2Angle = 5 * Math.sin(2 * g_seconds);
+  } if (g_animateRightArm) {
+    g_rightArmAngle = 15 * Math.sin(3 * g_seconds);
+  } if (g_animateLeftArm) {
+    g_leftArmAngle = -15 * Math.sin(3 * g_seconds);
   }
 }
 
@@ -166,9 +185,6 @@ function renderScene() {
   belly.matrix.translate(-0.3, -0.13, -0.02);
   belly.matrix.scale(0.74, 0.25, 0.02);
   belly.render();
-
-  // eye1.matrix.translate(0.55, -0.09, 0.07);
-  // eye1.matrix.scale(0.03, 0.03, 0.02);
 
   var tail1 = new Cube();
   tail1.color = [0.24, 0.12, 0.04, 1.0];
@@ -217,15 +233,16 @@ function renderScene() {
   nose.matrix.scale(0.05, 0.05, 0.02);
   nose.render();
 
-  // top right
+  // right arm
   var arm1 = new Cube();
   arm1.color = [0.23, 0.11, 0.03, 1.0];
-  arm1.matrix.translate(0.2, 0.12, 0.1);
+  arm1.matrix.translate(0.2, 0.09, 0.1);
   arm1.matrix.rotate(35, 0, 0, 1);
-  arm1.matrix.scale(0.15, 0.2, 0.2);
+  arm1.matrix.rotate(g_rightArmAngle, 0, 0, 1);
+  arm1.matrix.scale(0.15, 0.25, 0.2);
   arm1.render();
 
-  // top left
+  // right leg
   var leg1 = new Cube();
   leg1.color = [0.23, 0.11, 0.03, 1.0];
   leg1.matrix.translate(-0.3, 0.1, 0.1);
@@ -233,15 +250,16 @@ function renderScene() {
   leg1.matrix.scale(0.15, 0.25, 0.2);
   leg1.render();
 
-  // bottom right
-  var arm1 = new Cube();
-  arm1.color = [0.23, 0.11, 0.03, 1.0];
-  arm1.matrix.translate(0.33, -0.21, 0.1);
-  arm1.matrix.rotate(145, 0, 0, 1);
-  arm1.matrix.scale(0.15, 0.2, 0.2);
-  arm1.render();
+  // left arm
+  var arm2 = new Cube();
+  arm2.color = [0.23, 0.11, 0.03, 1.0];
+  arm2.matrix.translate(0.32, -0.18, 0.1);
+  arm2.matrix.rotate(150, 0, 0, 1);
+  arm2.matrix.rotate(g_leftArmAngle, 0, 0, 1);
+  arm2.matrix.scale(0.15, 0.25, 0.2);
+  arm2.render();
 
-  // bottom left
+  // left leg
   var leg2 = new Cube();
   leg2.color = [0.23, 0.11, 0.03, 1.0];
   leg2.matrix.translate(-0.2, -0.2, 0.1);
