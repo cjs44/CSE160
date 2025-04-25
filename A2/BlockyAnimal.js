@@ -23,7 +23,6 @@ let canvas;
 let gl;
 let a_Position;
 let u_FragColor;
-let u_Size;
 
 // Setup WebGL with canvas
 function setupWebGL() {
@@ -31,12 +30,13 @@ function setupWebGL() {
   canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
-  // gl = getWebGLContext(canvas);
   gl = canvas.getContext("webgl", { preserveDrawingBuffer: true });
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
+
+  gl.enable(gl.DEPTH_TEST);
 }
 
 // Connect vars to GLSL
@@ -47,7 +47,7 @@ function connectVariablesToGLSL() {
     return;
   }
 
-  // // Get the storage location of a_Position
+  // Get the storage location of a_Position
   a_Position = gl.getAttribLocation(gl.program, 'a_Position');
   if (a_Position < 0) {
     console.log('Failed to get the storage location of a_Position');
@@ -60,13 +60,6 @@ function connectVariablesToGLSL() {
     console.log('Failed to get the storage location of u_FragColor');
     return;
   }
-
-  // Get the storage location of u_Size
-  // u_Size = gl.getUniformLocation(gl.program, 'u_Size');
-  // if (!u_Size) {
-  //   console.log('Failed to get the storage location of u_Size');
-  //   return;
-  // }
 
   // Get the storage location of u_ModelMatrix
   u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
@@ -87,36 +80,11 @@ function connectVariablesToGLSL() {
   gl.uniformMatrix4fv(u_ModelMatrix, false, identifyM.elements);
 }
 
-// constants
-const POINT = 0;
-const TRIANGLE = 1;
-const CIRCLE = 2;
-
-// global vars for HTML UI elements
-let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
-let g_selectedSize = 10.0;
-let g_selectedType = POINT;
 let g_globalAngle = 0;
 
 function addActionsForUI() {
-  // buttons
-  // document.getElementById('green').onclick = function () { g_selectedColor = [0.0, 1.0, 0.0, 1.0]; };
-  // document.getElementById('red').onclick = function () { g_selectedColor = [1.0, 0.0, 0.0, 1.0]; };
-
-  // clear button
-  document.getElementById('clear').onclick = function () { g_shapesList = []; renderAllShapes(); };
-
-  // drawing modes
-  document.getElementById('square').onclick = function () { g_selectedType = POINT; };
-  document.getElementById('triangle').onclick = function () { g_selectedType = TRIANGLE; };
-  document.getElementById('circle').onclick = function () { g_selectedType = CIRCLE; };
-
-  // sliders
-  document.getElementById('redSlide').addEventListener('mouseup', function () { g_selectedColor[0] = this.value / 100; });
-  document.getElementById('greenSlide').addEventListener('mouseup', function () { g_selectedColor[1] = this.value / 100; });
-  document.getElementById('blueSlide').addEventListener('mouseup', function () { g_selectedColor[2] = this.value / 100; });
   // angle slider
-  document.getElementById('angleSlide').addEventListener('mousemove', function () { g_globalAngle = this.value; renderAllShapes();});
+  document.getElementById('angleSlide').addEventListener('input', function () { g_globalAngle = this.value; renderScene();});
 }
 
 function main() {
@@ -124,94 +92,52 @@ function main() {
   setupWebGL();
   connectVariablesToGLSL();
 
-  gl.enable(gl.DEPTH_TEST);
-
   // setup for HTML UI
   addActionsForUI();
-
-  // Register function (event handler) to be called on a mouse press
-  canvas.onmousedown = click;
-  canvas.onmousemove = function (ev) { if (ev.buttons == 1) { click(ev) } };
 
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
   // Clear <canvas>
-  // gl.clear(gl.COLOR_BUFFER_BIT);
-  renderAllShapes();
+  renderScene();
 }
 
-var g_shapesList = [];
-
-// ev is the event
-function click(ev) {
-  // call helper funct
-  [x, y] = convertCoordinatesForGL(ev);
-
-  // create and store point
-  let point;
-  if (g_selectedType == POINT) {
-    point = new Point();
-  } else if (g_selectedType == TRIANGLE) {
-    point = new Triangle();
-  } else if (g_selectedType == CIRCLE) {
-    point = new Circle();
+function sendTextToHTML(text, htmlID) {
+  let htmlElement = document.getElementById(htmlID);
+  if (htmlElement) {
+    htmlElement.innerText = text;
   }
-
-  point.position = [x, y];
-  point.color = g_selectedColor.slice();
-  point.size = g_selectedSize;
-  if (g_selectedType == CIRCLE) {
-    point.segments = g_selectedSegment;
-  }
-  g_shapesList.push(point);
-
-  // call helper funct
-  renderAllShapes();
 }
 
-function convertCoordinatesForGL(ev) {
-  var x = ev.clientX; // x coordinate of a mouse pointer
-  var y = ev.clientY; // y coordinate of a mouse pointer
-  var rect = ev.target.getBoundingClientRect();
+function renderScene() {
+  var startTime = performance.now();
 
-  x = ((x - rect.left) - canvas.width / 2) / (canvas.width / 2);
-  y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
-
-  return ([x, y]);
-}
-
-function renderAllShapes() {
   // camera angle
   var globalRotMatrix = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
   gl.uniformMatrix4fv(u_GlobalRotation, false, globalRotMatrix.elements);
 
 
   // Clear <canvas>
-  // gl.clear(gl.COLOR_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  //var len = g_points.length;
-  // var len = g_shapesList.length;
-
-  // for (var i = 0; i < len; i++) {
-  //   g_shapesList[i].render();
-  // }
-
-  // test triangle
-  // drawTriangle3D([-1.0, 0.0, 0.0,  -0.5, -1.0, 0.0,  0.0, 0.0, 0.0]);
-
-  // cube
   var body = new Cube();
-  body.color = [1.0, 0.0, 0.0, 1.0];
-  body.matrix.translate(-0.25, -0.5, 0.0);
-  body.matrix.scale(0.5, 1, 0.5);
+  body.color = [0.25, 0.13, 0.05, 1.0];
+  body.matrix.translate(-0.35, -0.2, 0.0);
+  body.matrix.scale(0.7, 0.4, 0.4);
   body.render();
 
-  var leftarm = new Cube();
-  leftarm.color = [1.0, 1.0, 0.0, 1.0];
-  leftarm.matrix.translate(0.7, 0.0, 0.0);
-  leftarm.matrix.rotate(45, 0, 0, 1);
-  leftarm.matrix.scale(0.25, 0.7, 0.5);
-  leftarm.render();
+  var tail1 = new Cube();
+  tail1.color = [0.24, 0.12, 0.04, 1.0];
+  tail1.matrix.translate(-0.65, -0.15, 0.05);
+  tail1.matrix.scale(0.3, 0.3, 0.3);
+  tail1.render();
+
+  var tail2 = new Cube();
+  tail2.color = [0.23, 0.11, 0.03, 1.0];
+  tail2.matrix.translate(-0.9, -0.125, 0.075);
+  tail2.matrix.scale(0.25, 0.25, 0.25);
+  tail2.render();
+
+  var duration = performance.now() - startTime;
+  sendTextToHTML("fps: " + Math.floor(10000/duration)/10, "fps");
 }
