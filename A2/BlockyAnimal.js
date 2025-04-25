@@ -5,8 +5,9 @@
 var VSHADER_SOURCE =
   `attribute vec4 a_Position;
   uniform mat4 u_ModelMatrix;
+  uniform mat4 u_GlobalRotation;
   void main() {
-    gl_Position = u_ModelMatrix * a_Position;
+    gl_Position = u_GlobalRotation * u_ModelMatrix * a_Position;
   }`;
 
 // Fragment shader program
@@ -74,6 +75,13 @@ function connectVariablesToGLSL() {
     return;
   }
 
+  // Get the storage location of u_GlobalRotation
+  u_GlobalRotation = gl.getUniformLocation(gl.program, 'u_GlobalRotation');
+  if (!u_GlobalRotation) {
+    console.log('Failed to get the storage location of u_GlobalRotation');
+    return;
+  }
+
   // Set initial value for this matrix to identify
   var identifyM = new Matrix4();
   gl.uniformMatrix4fv(u_ModelMatrix, false, identifyM.elements);
@@ -88,7 +96,7 @@ const CIRCLE = 2;
 let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
 let g_selectedSize = 10.0;
 let g_selectedType = POINT;
-let g_selectedSegment = 10;
+let g_globalAngle = 0;
 
 function addActionsForUI() {
   // buttons
@@ -107,10 +115,8 @@ function addActionsForUI() {
   document.getElementById('redSlide').addEventListener('mouseup', function () { g_selectedColor[0] = this.value / 100; });
   document.getElementById('greenSlide').addEventListener('mouseup', function () { g_selectedColor[1] = this.value / 100; });
   document.getElementById('blueSlide').addEventListener('mouseup', function () { g_selectedColor[2] = this.value / 100; });
-  // size slider
-  document.getElementById('sizeSlide').addEventListener('mouseup', function () { g_selectedSize = this.value; });
-  // segment slider
-  document.getElementById('segSlide').addEventListener('mouseup', function () { g_selectedSegment = this.value; });
+  // angle slider
+  document.getElementById('angleSlide').addEventListener('mousemove', function () { g_globalAngle = this.value; renderAllShapes();});
 }
 
 function main() {
@@ -176,6 +182,11 @@ function convertCoordinatesForGL(ev) {
 }
 
 function renderAllShapes() {
+  // camera angle
+  var globalRotMatrix = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
+  gl.uniformMatrix4fv(u_GlobalRotation, false, globalRotMatrix.elements);
+
+
   // Clear <canvas>
   // gl.clear(gl.COLOR_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -188,7 +199,7 @@ function renderAllShapes() {
   // }
 
   // test triangle
-  drawTriangle3D([-1.0, 0.0, 0.0,  -0.5, -1.0, 0.0,  0.0, 0.0, 0.0]);
+  // drawTriangle3D([-1.0, 0.0, 0.0,  -0.5, -1.0, 0.0,  0.0, 0.0, 0.0]);
 
   // cube
   var body = new Cube();
