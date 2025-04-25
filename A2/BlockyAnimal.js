@@ -85,14 +85,22 @@ function connectVariablesToGLSL() {
 let g_globalAngle = 0;
 let g_joint1Angle = 0;
 let g_joint2Angle = 0;
+let g_animateJoint1 = false;
+let g_animateJoint2 = false;
 
 function addActionsForUI() {
   // angle slider
-  document.getElementById('angleSlide').addEventListener('input', function () { g_globalAngle = this.value; renderScene();});
+  document.getElementById('angleSlide').addEventListener('input', function () { g_globalAngle = this.value; renderScene(); });
   // joint 1 - tail base - angle
-  document.getElementById('joint1Slide').addEventListener('input', function () { g_joint1Angle = this.value; renderScene();});
+  document.getElementById('joint1Slide').addEventListener('input', function () { g_joint1Angle = this.value; renderScene(); });
   // joint 2 - tail end - angle
-  document.getElementById('joint2Slide').addEventListener('input', function () { g_joint2Angle = this.value; renderScene();});
+  document.getElementById('joint2Slide').addEventListener('input', function () { g_joint2Angle = this.value; renderScene(); });
+  // animate buttons - joint 1
+  document.getElementById('joint1On').onclick = function () { g_animateJoint1 = true; };
+  document.getElementById('joint1Off').onclick = function () { g_animateJoint1 = false; };
+  // animate buttons - joint 2
+  document.getElementById('joint2On').onclick = function () { g_animateJoint2 = true; };
+  document.getElementById('joint2Off').onclick = function () { g_animateJoint2 = false; };
 }
 
 function main() {
@@ -107,7 +115,26 @@ function main() {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
   // Clear <canvas>
+  // renderScene();
+  requestAnimationFrame(tick);
+}
+
+var g_startTime = performance.now() / 1000.0;
+var g_seconds = performance.now() / 1000.0 - g_startTime;
+
+function tick() {
+  g_seconds = performance.now() / 1000.0 - g_startTime;
+  updateAnimationAngles();
   renderScene();
+  requestAnimationFrame(tick);
+}
+
+function updateAnimationAngles() {
+  if (g_animateJoint1) {
+    g_joint1Angle = 25 * Math.sin(g_seconds);
+  } if (g_animateJoint2) {
+    g_joint2Angle = 15 * Math.sin(2 * g_seconds);
+  }
 }
 
 function sendTextToHTML(text, htmlID) {
@@ -116,8 +143,8 @@ function sendTextToHTML(text, htmlID) {
     htmlElement.innerText = text;
   }
 }
-function renderScene() {
 
+function renderScene() {
   var startTime = performance.now();
 
   // camera angle
