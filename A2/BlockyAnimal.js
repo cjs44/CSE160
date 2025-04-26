@@ -1,7 +1,5 @@
 // This is supposed to be an otter
 
-// AWESOMENESS: 
-
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -87,11 +85,15 @@ let g_joint1Angle = 0;
 let g_joint2Angle = 0;
 let g_rightArmAngle = 0;
 let g_leftArmAngle = 0;
+let g_rightLegAngle = 0;
+let g_leftLegAngle = 0;
 
 let g_animateJoint1 = false;
 let g_animateJoint2 = false;
 let g_animateRightArm = false;
 let g_animateLeftArm = false;
+let g_animateRightLeg = false;
+let g_animateLeftLeg = false;
 
 function addActionsForUI() {
   // camera angle slider
@@ -116,6 +118,16 @@ function addActionsForUI() {
   // left arm - animate buttons
   document.getElementById('leftArmOn').onclick = function () { g_animateLeftArm = true; };
   document.getElementById('leftArmOff').onclick = function () { g_animateLeftArm = false; };
+  // right leg - angle
+  document.getElementById('rightLegSlide').addEventListener('input', function () { g_rightLegAngle = this.value; renderScene(); });
+  // right leg - animate buttons
+  document.getElementById('rightLegOn').onclick = function () { g_animateRightLeg = true; };
+  document.getElementById('rightLegOff').onclick = function () { g_animateRightLeg = false; };
+  // left leg - angle
+  document.getElementById('leftLegSlide').addEventListener('input', function () { g_leftLegAngle = this.value; renderScene(); });
+  // left leg - animate buttons
+  document.getElementById('leftLegOn').onclick = function () { g_animateLeftLeg = true; };
+  document.getElementById('leftLegOff').onclick = function () { g_animateLeftLeg = false; };
 }
 
 function main() {
@@ -153,6 +165,10 @@ function updateAnimationAngles() {
     g_rightArmAngle = 15 * Math.sin(3 * g_seconds);
   } if (g_animateLeftArm) {
     g_leftArmAngle = -15 * Math.sin(3 * g_seconds);
+  } if (g_animateRightLeg) {
+    g_rightLegAngle = -15 * Math.sin(2 * g_seconds);
+  } if (g_animateLeftLeg) {
+    g_leftLegAngle = 15 * Math.sin(2 * g_seconds);
   }
 }
 
@@ -245,9 +261,10 @@ function renderScene() {
   // right leg
   var leg1 = new Cube();
   leg1.color = [0.23, 0.11, 0.03, 1.0];
-  leg1.matrix.translate(-0.3, 0.1, 0.1);
+  leg1.matrix.translate(-0.3, 0.05, 0.1);
   leg1.matrix.rotate(45, 0, 0, 1);
-  leg1.matrix.scale(0.15, 0.25, 0.2);
+  leg1.matrix.rotate(g_rightLegAngle, 0, 0, 1);
+  leg1.matrix.scale(0.15, 0.3, 0.2);
   leg1.render();
 
   // left arm
@@ -262,9 +279,10 @@ function renderScene() {
   // left leg
   var leg2 = new Cube();
   leg2.color = [0.23, 0.11, 0.03, 1.0];
-  leg2.matrix.translate(-0.2, -0.2, 0.1);
+  leg2.matrix.translate(-0.2, -0.18, 0.1);
   leg2.matrix.rotate(135, 0, 0, 1);
-  leg2.matrix.scale(0.15, 0.25, 0.2);
+  leg2.matrix.rotate(g_leftLegAngle, 0, 0, 1);
+  leg2.matrix.scale(0.15, 0.3, 0.2);
   leg2.render();
 
   var duration = performance.now() - startTime;
