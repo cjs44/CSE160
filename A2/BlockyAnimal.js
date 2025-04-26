@@ -95,6 +95,13 @@ let g_animateLeftArm = false;
 let g_animateRightLeg = false;
 let g_animateLeftLeg = false;
 
+let g_mouseAngleX = 0;
+let g_mouseAngleY = 0;
+let g_mouseDown = false;
+// have to track where it is clicked and calculate position off of that
+let g_clickX = 0;
+let g_clickY = 0;
+
 function addActionsForUI() {
   // camera angle slider
   document.getElementById('angleSlide').addEventListener('input', function () { g_globalAngle = this.value; renderScene(); });
@@ -141,6 +148,9 @@ function main() {
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
+  // Mouse movement
+  mouseAngleControl(canvas);
+
   // Clear <canvas>
   // renderScene();
   requestAnimationFrame(tick);
@@ -172,6 +182,30 @@ function updateAnimationAngles() {
   }
 }
 
+// help with getting click coords
+// https://stackoverflow.com/questions/23744605/javascript-get-x-and-y-coordinates-on-mouse-click
+// mouse angle change
+function mouseAngleControl(canvas) {
+  // mark where the user clicked down
+  canvas.onmousedown = (event) => {
+    g_mouseDown = true;
+    g_clickX = event.clientX;
+    g_clickY = event.clientY;
+  };
+  canvas.onmousemove = (event) => {
+    // only change angle if they are clicking
+    if (g_mouseDown) {
+      g_mouseAngleY += event.clientX - g_clickX;
+      g_mouseAngleX += event.clientY - g_clickY;
+      // got a tip to set this again so it doesn't spin as fast
+      g_clickX = event.clientX;
+      g_clickY = event.clientY;
+    }
+  };
+  // mark when user isn't clicking
+  canvas.onmouseup = () => { g_mouseDown = false; };
+}
+
 function sendTextToHTML(text, htmlID) {
   let htmlElement = document.getElementById(htmlID);
   if (htmlElement) {
@@ -183,9 +217,12 @@ function renderScene() {
   var startTime = performance.now();
 
   // camera angle
+  // slider
   var globalRotMatrix = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
+  // mouse drag angle
+  globalRotMatrix.rotate(-g_mouseAngleX, 1, 0, 0);
+  globalRotMatrix.rotate(-g_mouseAngleY, 0, 1, 0);
   gl.uniformMatrix4fv(u_GlobalRotation, false, globalRotMatrix.elements);
-
 
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -199,7 +236,7 @@ function renderScene() {
   var belly = new Cube();
   belly.color = [0.45, 0.30, 0.16, 1.0];
   belly.matrix.translate(-0.3, -0.13, -0.02);
-  belly.matrix.scale(0.74, 0.25, 0.02);
+  belly.matrix.scale(0.65, 0.25, 0.02);
   belly.render();
 
   var tail1 = new Cube();
@@ -286,5 +323,5 @@ function renderScene() {
   leg2.render();
 
   var duration = performance.now() - startTime;
-  sendTextToHTML("fps: " + Math.floor(10000/duration)/10, "fps");
+  sendTextToHTML("fps: " + Math.floor(10000 / duration) / 10, "fps");
 }
