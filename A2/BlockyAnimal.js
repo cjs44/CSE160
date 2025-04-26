@@ -83,6 +83,7 @@ function connectVariablesToGLSL() {
 let g_globalAngle = 0;
 let g_joint1Angle = 0;
 let g_joint2Angle = 0;
+let g_joint3Angle = 0;
 let g_rightArmAngle = 0;
 let g_leftArmAngle = 0;
 let g_rightLegAngle = 0;
@@ -90,17 +91,11 @@ let g_leftLegAngle = 0;
 
 let g_animateJoint1 = false;
 let g_animateJoint2 = false;
+let g_animateJoint3 = false;
 let g_animateRightArm = false;
 let g_animateLeftArm = false;
 let g_animateRightLeg = false;
 let g_animateLeftLeg = false;
-
-let g_mouseAngleX = 0;
-let g_mouseAngleY = 0;
-let g_mouseDown = false;
-// have to track where it is clicked and calculate position off of that
-let g_clickX = 0;
-let g_clickY = 0;
 
 function addActionsForUI() {
   // camera angle slider
@@ -110,11 +105,16 @@ function addActionsForUI() {
   // joint 1 - animate buttons
   document.getElementById('joint1On').onclick = function () { g_animateJoint1 = true; };
   document.getElementById('joint1Off').onclick = function () { g_animateJoint1 = false; };
-  // joint 2 - tail end - angle
+  // joint 2 - tail middle - angle
   document.getElementById('joint2Slide').addEventListener('input', function () { g_joint2Angle = this.value; renderScene(); });
   // joint 2 - animate buttons
   document.getElementById('joint2On').onclick = function () { g_animateJoint2 = true; };
   document.getElementById('joint2Off').onclick = function () { g_animateJoint2 = false; };
+  // joint 3 - tail end - angle
+  document.getElementById('joint3Slide').addEventListener('input', function () { g_joint3Angle = this.value; renderScene(); });
+  // joint 3 - animate buttons
+  document.getElementById('joint3On').onclick = function () { g_animateJoint3 = true; };
+  document.getElementById('joint3Off').onclick = function () { g_animateJoint3 = false; };
   // right arm - angle
   document.getElementById('rightArmSlide').addEventListener('input', function () { g_rightArmAngle = this.value; renderScene(); });
   // right arm - animate buttons
@@ -171,6 +171,8 @@ function updateAnimationAngles() {
     g_joint1Angle = 15 * Math.sin(g_seconds);
   } if (g_animateJoint2) {
     g_joint2Angle = 5 * Math.sin(2 * g_seconds);
+  } if (g_animateJoint3) {
+    g_joint3Angle = 4 * Math.sin(2.5 * g_seconds);
   } if (g_animateRightArm) {
     g_rightArmAngle = 15 * Math.sin(3 * g_seconds);
   } if (g_animateLeftArm) {
@@ -182,6 +184,12 @@ function updateAnimationAngles() {
   }
 }
 
+let g_mouseAngleX = 0;
+let g_mouseAngleY = 0;
+let g_mouseDown = false;
+// have to track where it is clicked and calculate position off of that
+let g_clickX = 0;
+let g_clickY = 0;
 // help with getting click coords
 // https://stackoverflow.com/questions/23744605/javascript-get-x-and-y-coordinates-on-mouse-click
 // mouse angle change
@@ -244,17 +252,26 @@ function renderScene() {
   tail1.matrix.translate(-0.15, 0.15, 0.05);
   tail1.matrix.rotate(180, 0, 0, 1);
   tail1.matrix.rotate(g_joint1Angle, 0, 0, 1);
-  var tailCoordMat = new Matrix4(tail1.matrix);
-  tail1.matrix.scale(0.5, 0.3, 0.3);
+  var tailCoordMat1 = new Matrix4(tail1.matrix);
+  tail1.matrix.scale(0.45, 0.3, 0.3);
   tail1.render();
 
   var tail2 = new Cube();
   tail2.color = [0.23, 0.11, 0.03, 1.0];
-  tail2.matrix = tailCoordMat;
+  tail2.matrix = tailCoordMat1;
   tail2.matrix.translate(0.35, 0.025, 0.025);
   tail2.matrix.rotate(g_joint2Angle, 0, 0, 1);
-  tail2.matrix.scale(0.35, 0.25, 0.25);
+  var tailCoordMat2 = new Matrix4(tail2.matrix);
+  tail2.matrix.scale(0.3, 0.25, 0.25);
   tail2.render();
+
+  var tail3 = new Cube();
+  tail3.color = [0.19, 0.09, 0.03, 1.0];
+  tail3.matrix = tailCoordMat2;
+  tail3.matrix.translate(0.25, 0.025, 0.025);
+  tail3.matrix.rotate(g_joint3Angle, 0, 0, 1);
+  tail3.matrix.scale(0.18, 0.2, 0.2);
+  tail3.render();
 
   var neck = new Cube();
   neck.color = [0.24, 0.12, 0.04, 1.0];
