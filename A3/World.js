@@ -21,16 +21,16 @@ var VSHADER_SOURCE =
 var FSHADER_SOURCE =
   `precision mediump float;
   varying vec2 v_UV;
-  uniform vec4 u_FragColor;
+  uniform vec4 u_baseColor;
   uniform sampler2D u_Sampler0;
   uniform int u_whichTexture;
+  uniform float u_texColorWeight;
   void main() {
-    if (u_whichTexture == -2) {
-      gl_FragColor = u_FragColor; // color
+    vec4 texColor0 = texture2D(u_Sampler0, v_UV); // texture0
+    if (u_whichTexture == 0) {
+      gl_FragColor = mix(u_baseColor, texColor0, u_texColorWeight); // color texture interpolation
     } else if (u_whichTexture == -1) {
       gl_FragColor = vec4(v_UV, 1.0, 1.0); // UV debug
-    } else if (u_whichTexture == 0) {
-      gl_FragColor = texture2D(u_Sampler0, v_UV); // texture0
     } else {
      gl_FragColor = vec4(1, 0.2, 0.2, 1); // error
     }
@@ -43,6 +43,8 @@ let a_Position;
 let a_UV;
 let u_Sampler0;
 let u_FragColor;
+let u_baseColor;
+let u_texColorWeight;
 
 // Setup WebGL with canvas
 function setupWebGL() {
@@ -80,7 +82,7 @@ function connectVariablesToGLSL() {
     console.log('Failed to get the storage location of a_UV');
     return;
   }
-  
+
   // Get the storage location of u_whichTexture
   u_whichTexture = gl.getUniformLocation(gl.program, 'u_whichTexture');
   if (!u_whichTexture) {
@@ -88,19 +90,32 @@ function connectVariablesToGLSL() {
     return false;
   }
 
-  // Get the storage location of u_Sampler
+  // Get the storage location of u_Sampler0
   u_Sampler0 = gl.getUniformLocation(gl.program, 'u_Sampler0');
   if (!u_Sampler0) {
     console.log('Failed to get the storage location of u_Sampler0');
     return false;
   }
 
-  // Get the storage location of u_FragColor
-  u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
-  if (!u_FragColor) {
-    console.log('Failed to get the storage location of u_FragColor');
+  // Get the storage location of u_baseColor
+  u_baseColor = gl.getUniformLocation(gl.program, 'u_baseColor');
+  if (!u_baseColor) {
+    console.log('Failed to get the storage location of u_baseColor');
     return;
   }
+
+  // Get the storage location of texColorWeight
+  u_texColorWeight = gl.getUniformLocation(gl.program, 'u_texColorWeight');
+  if (!u_texColorWeight) {
+    console.log('Failed to get the storage location of u_texColorWeight');
+    return;
+  }
+  // Get the storage location of u_FragColor
+  // u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+  // if (!u_FragColor) {
+  //   console.log('Failed to get the storage location of u_FragColor');
+  //   return;
+  // }
 
   // Get the storage location of u_ModelMatrix
   u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
@@ -185,12 +200,18 @@ function initTextures() {
     return false;
   }
   // Register the event handler to be called on loading an image
-  image.onload = function(){ sendImageToTexture0(image); };
+  image.onload = function () { sendImageToTexture0(image); };
   // Tell the browser to load an image
   image.src = 'sky.jpg';
 
   // can add more textures
   // add texture functs and send other images
+
+
+  // Set default base color
+  gl.uniform4f(u_baseColor, 0.0, 0.0, 1.0, 1.0);
+  // set default texColorWeight to fullt texture
+  gl.uniform1f(u_texColorWeight, 1.0);
 
   return true;
 }
@@ -212,10 +233,10 @@ function sendImageToTexture0(image) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   // Set the texture image
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-  
+
   // Set the texture unit 0 to the sampler
   gl.uniform1i(u_Sampler0, 0);
-  
+
   // gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
 
   // gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
@@ -324,19 +345,23 @@ function renderScene() {
   var body = new Cube();
   body.color = [0.25, 0.13, 0.05, 1.0];
   body.textureNum = 0;
+  body.texColorWeight = 0.5;
   body.matrix.translate(-0.35, -0.2, 0.0);
   body.matrix.scale(0.7, 0.4, 0.4);
   body.render();
 
   var belly = new Cube();
   belly.color = [0.45, 0.30, 0.16, 1.0];
-  belly.textureNum = -1;
+  belly.textureNum = 0;
+  belly.texColorWeight = 0.3;
   belly.matrix.translate(-0.3, -0.13, -0.02);
   belly.matrix.scale(0.65, 0.25, 0.02);
   belly.render();
 
   var tail1 = new Cube();
   tail1.color = [0.24, 0.12, 0.04, 1.0];
+  tail1.textureNum = 0;
+  tail1.texColorWeight = 0.0;
   tail1.matrix.translate(-0.15, 0.15, 0.05);
   tail1.matrix.rotate(180, 0, 0, 1);
   tail1.matrix.rotate(g_joint1Angle, 0, 0, 1);
