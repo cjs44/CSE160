@@ -1,5 +1,3 @@
-// This is supposed to be an otter
-
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -12,8 +10,7 @@ var VSHADER_SOURCE =
   uniform mat4 u_ViewMatrix;
   uniform mat4 u_ProjectionMatrix;
   void main() {
-    gl_Position = u_GlobalRotation * u_ModelMatrix * a_Position;
-    // gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotation * u_ModelMatrix * a_Position;
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotation * u_ModelMatrix * a_Position;
     v_UV = a_UV;
   }`;
 
@@ -131,6 +128,20 @@ function connectVariablesToGLSL() {
     return;
   }
 
+  // Get the storage location of u_ViewMatrix
+  u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
+  if (!u_ViewMatrix) {
+    console.log('Failed to get the storage location of u_ViewMatrix');
+    return;
+  }
+
+  // Get the storage location of u_ProjectionMatrix
+  u_ProjectionMatrix = gl.getUniformLocation(gl.program, 'u_ProjectionMatrix');
+  if (!u_ProjectionMatrix) {
+    console.log('Failed to get the storage location of u_ProjectionMatrix');
+    return;
+  }
+
   // Set initial value for this matrix to identify
   var identifyM = new Matrix4();
   gl.uniformMatrix4fv(u_ModelMatrix, false, identifyM.elements);
@@ -152,6 +163,8 @@ let g_animateRightArm = false;
 let g_animateLeftArm = false;
 let g_animateRightLeg = false;
 let g_animateLeftLeg = false;
+
+let camera = null;
 
 function addActionsForUI() {
   // camera angle slider
@@ -252,6 +265,9 @@ function main() {
 
   initTextures();
 
+  camera = new Camera(canvas);
+  document.onkeydown = keydown;
+
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -289,6 +305,24 @@ function updateAnimationAngles() {
   } if (g_animateLeftLeg) {
     g_leftLegAngle = 15 * Math.sin(2 * g_seconds);
   }
+}
+
+function keydown(ev) {
+  if (ev.keyCode === 87) { // W
+    camera.moveForward();
+  } else if (ev.keyCode === 83) { // S
+    camera.moveBackwards()
+  } else if (ev.keyCode === 65) { // A
+    camera.moveLeft()
+  } else if (ev.keyCode === 68) { // D
+    camera.moveRight()
+  } else if (ev.keyCode === 81) { // Q
+    camera.panLeft()
+  } else if (ev.keyCode === 69) { // E
+    camera.panRight()
+  }
+
+  renderScene();
 }
 
 let g_mouseAngleX = 0;
@@ -330,6 +364,10 @@ function sendTextToHTML(text, htmlID) {
 
 function renderScene() {
   var startTime = performance.now();
+
+  gl.uniformMatrix4fv(u_ProjectionMatrix, false, camera.projectionMatrix.elements);
+
+  gl.uniformMatrix4fv(u_ViewMatrix, false, camera.viewMatrix.elements);
 
   // camera angle
   // slider
