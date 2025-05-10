@@ -164,8 +164,6 @@ let g_animateLeftArm = false;
 let g_animateRightLeg = false;
 let g_animateLeftLeg = false;
 
-let camera = null;
-
 function addActionsForUI() {
   // camera angle slider
   document.getElementById('angleSlide').addEventListener('input', function () { g_globalAngle = this.value; renderScene(); });
@@ -362,11 +360,68 @@ function sendTextToHTML(text, htmlID) {
   }
 }
 
+let camera = null;
+
+var map = [
+  [3, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+];
+
+function drawMap() {
+  for (let z = 0; z < 32; z++) {
+    for (let x = 0; x < 32; x++) {
+      const height = map[z][x];
+      for (let y = 0; y < height; y++) {
+        let w = new Cube();
+        w.color = [0.5, 0.5, 0.5, 1];
+        w.textureNum = 0;
+        w.texColorWeight = 0.0;
+        w.matrix.translate(0, y * 0.3 - 0.7, 0);
+        w.matrix.scale(0.3, 0.3, 0.3);
+        w.matrix.translate(z-16, 0, x-16);
+        w.render();
+      }
+    }
+  }
+}
+
 function renderScene() {
   var startTime = performance.now();
 
+  // Projection
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, camera.projectionMatrix.elements);
-
+  // View
   gl.uniformMatrix4fv(u_ViewMatrix, false, camera.viewMatrix.elements);
 
   // camera angle
@@ -380,10 +435,33 @@ function renderScene() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  var body = new Cube();
+  drawMap();
+
+  // Ground
+  var ground = new Cube();
+  ground.color = [0.3, 0.8, 0.3, 1.0];
+  ground.textureNum = 0;
+  ground.texColorWeight = 0;
+  ground.matrix.translate(0, -0.75, 0.0);
+  ground.matrix.scale(10, 0, 10);
+  ground.matrix.translate(-0.5, 0, -0.5);
+  ground.render();
+
+  // Sky
+  var sky = new Cube();
+  sky.color = [0.0, 0.5, 1.0, 1.0];
+  sky.textureNum = 0;
+  sky.texColorWeight = 0.0;
+  sky.matrix.scale(50, 50, 50);
+  sky.matrix.translate(-0.5, -0.5, -0.5);
+  sky.render();
+
+
+  // otter
+   /*var body = new Cube();
   body.color = [0.25, 0.13, 0.05, 1.0];
   body.textureNum = 0;
-  body.texColorWeight = 0.5;
+  body.texColorWeight = 0.0;
   body.matrix.translate(-0.35, -0.2, 0.0);
   body.matrix.scale(0.7, 0.4, 0.4);
   body.render();
@@ -391,7 +469,7 @@ function renderScene() {
   var belly = new Cube();
   belly.color = [0.45, 0.30, 0.16, 1.0];
   belly.textureNum = 0;
-  belly.texColorWeight = 0.3;
+  belly.texColorWeight = 0.0;
   belly.matrix.translate(-0.3, -0.13, -0.02);
   belly.matrix.scale(0.65, 0.25, 0.02);
   belly.render();
@@ -409,6 +487,8 @@ function renderScene() {
 
   var tail2 = new Cube();
   tail2.color = [0.23, 0.11, 0.03, 1.0];
+  tail2.textureNum = 0;
+  tail2.texColorWeight = 0.0;
   tail2.matrix = tailCoordMat1;
   tail2.matrix.translate(0.35, 0.025, 0.025);
   tail2.matrix.rotate(g_joint2Angle, 0, 0, 1);
@@ -418,6 +498,7 @@ function renderScene() {
 
   var tail3 = new Cube();
   tail3.color = [0.19, 0.09, 0.03, 1.0];
+  tail3.texColorWeight = 0.0;
   tail3.matrix = tailCoordMat2;
   tail3.matrix.translate(0.25, 0.025, 0.025);
   tail3.matrix.rotate(g_joint3Angle, 0, 0, 1);
@@ -426,30 +507,35 @@ function renderScene() {
 
   var neck = new Cube();
   neck.color = [0.24, 0.12, 0.04, 1.0];
+  neck.texColorWeight = 0.0;
   neck.matrix.translate(0.35, -0.175, 0.05);
   neck.matrix.scale(0.1, 0.35, 0.3);
   neck.render();
 
   var head = new Cube();
   head.color = [0.45, 0.30, 0.16, 1.0];
+  head.texColorWeight = 0.0;
   head.matrix.translate(0.45, -0.15, 0.075);
   head.matrix.scale(0.2, 0.3, 0.3);
   head.render();
 
   var eye1 = new Cube();
   eye1.color = [0.0, 0.0, 0.0, 1.0];
+  eye1.texColorWeight = 0.0;
   eye1.matrix.translate(0.55, -0.09, 0.07);
   eye1.matrix.scale(0.03, 0.03, 0.02);
   eye1.render();
 
   var eye2 = new Cube();
   eye2.color = [0.0, 0.0, 0.0, 1.0];
+  eye2.texColorWeight = 0.0;
   eye2.matrix.translate(0.55, 0.04, 0.07);
   eye2.matrix.scale(0.03, 0.03, 0.02);
   eye2.render();
 
   var nose = new Cube();
   nose.color = [0.23, 0.15, 0.10, 1.0];
+  nose.texColorWeight = 0.0;
   nose.matrix.translate(0.5, -0.03, 0.07);
   nose.matrix.scale(0.05, 0.05, 0.02);
   nose.render();
@@ -457,6 +543,7 @@ function renderScene() {
   // right arm
   var arm1 = new Cube();
   arm1.color = [0.23, 0.11, 0.03, 1.0];
+  arm1.texColorWeight = 0.0;
   arm1.matrix.translate(0.2, 0.09, 0.1);
   arm1.matrix.rotate(35, 0, 0, 1);
   arm1.matrix.rotate(g_rightArmAngle, 0, 0, 1);
@@ -466,6 +553,7 @@ function renderScene() {
   // right leg
   var leg1 = new Cube();
   leg1.color = [0.23, 0.11, 0.03, 1.0];
+  leg1.texColorWeight = 0.0;
   leg1.matrix.translate(-0.3, 0.05, 0.1);
   leg1.matrix.rotate(45, 0, 0, 1);
   leg1.matrix.rotate(g_rightLegAngle, 0, 0, 1);
@@ -475,6 +563,7 @@ function renderScene() {
   // left arm
   var arm2 = new Cube();
   arm2.color = [0.23, 0.11, 0.03, 1.0];
+  arm2.texColorWeight = 0.0;
   arm2.matrix.translate(0.32, -0.18, 0.1);
   arm2.matrix.rotate(150, 0, 0, 1);
   arm2.matrix.rotate(g_leftArmAngle, 0, 0, 1);
@@ -484,11 +573,12 @@ function renderScene() {
   // left leg
   var leg2 = new Cube();
   leg2.color = [0.23, 0.11, 0.03, 1.0];
+  leg2.texColorWeight = 0.0;
   leg2.matrix.translate(-0.2, -0.18, 0.1);
   leg2.matrix.rotate(135, 0, 0, 1);
   leg2.matrix.rotate(g_leftLegAngle, 0, 0, 1);
   leg2.matrix.scale(0.15, 0.3, 0.2);
-  leg2.render();
+  leg2.render();*/
 
   var duration = performance.now() - startTime;
   sendTextToHTML("fps: " + Math.floor(10000 / duration) / 10, "fps");

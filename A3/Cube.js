@@ -1,3 +1,10 @@
+/*
+textureNum
+0 - color texture interpolation
+-1 - UV debug
+other - error red
+*/
+
 // So it doesn't create a buffer every time
 let buffer = null;
 let vertexBuffer = null;
@@ -8,7 +15,7 @@ class Cube {
         this.type = 'cube';
         this.color = [1.0, 1.0, 1.0, 1.0];
         this.matrix = new Matrix4();
-        this.textureNum = -1;
+        this.textureNum = 0;
         this.texColorWeight = 1.0;
     }
 
