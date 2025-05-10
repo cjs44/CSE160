@@ -1,6 +1,7 @@
 /*
 textureNum
 0 - color texture interpolation
+1 - second image interpolation
 -1 - UV debug
 other - error red
 */
@@ -24,73 +25,75 @@ class Cube {
 
         // which texture
         gl.uniform1i(u_whichTexture, this.textureNum);
-       
+
         // which texture weight
         gl.uniform1f(u_texColorWeight, this.texColorWeight);
 
         // Pass the color of a point to u_FragColor variable
         gl.uniform4f(u_baseColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-        
+
         // Pass the matrix to u_ModelMatrix attribute
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
-        drawCube(this.matrix, this.color);
+        if (this.texColorWeight === 0) {
+            drawCubeFast();
+        } else {
+            drawCubeTextured();
+        }
     }
 }
 
-function drawCube(M, rgba) {
-    // Appy matrix
-    gl.uniformMatrix4fv(u_ModelMatrix, false, M.elements);
-
+function drawCubeTextured() {
     // Pos combined with UV
     // front
-    drawTriangle3DUV([0.0, 0.0, 0.0,  1.0, 1.0, 0.0,  1.0, 0.0, 0.0], [0,0, 1,1, 1,0]);
-    drawTriangle3DUV([0.0, 0.0, 0.0,  0.0, 1.0, 0.0,  1.0, 1.0, 0.0], [0,0, 0,1, 1,1]);
+    drawTriangle3DUV([0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0], [0, 0, 1, 1, 1, 0]);
+    drawTriangle3DUV([0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0], [0, 0, 0, 1, 1, 1]);
     // back
-    drawTriangle3DUV([0.0, 0.0, 1.0,   1.0, 0.0, 1.0,   1.0, 1.0, 1.0], [1,0, 0,0, 0,1]);
-    drawTriangle3DUV([0.0, 0.0, 1.0,   1.0, 1.0, 1.0,   0.0, 1.0, 1.0],  [1,0, 0,1, 1,1]);
+    drawTriangle3DUV([0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0], [1, 0, 0, 0, 0, 1]);
+    drawTriangle3DUV([0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0], [1, 0, 0, 1, 1, 1]);
     // top
-    drawTriangle3DUV([0.0, 1.0, 0.0,   1.0, 1.0, 0.0,   1.0, 1.0, 1.0], [0,0, 1,0, 1,1]);
-    drawTriangle3DUV([0.0, 1.0, 0.0,   1.0, 1.0, 1.0,   0.0, 1.0, 1.0], [0,0, 1,1, 0,1]);
+    drawTriangle3DUV([0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0], [0, 0, 1, 0, 1, 1]);
+    drawTriangle3DUV([0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0], [0, 0, 1, 1, 0, 1]);
     // bottom
-    drawTriangle3DUV([0.0, 0.0, 0.0,   1.0, 0.0, 1.0,   1.0, 0.0, 0.0], [1,0, 0,1, 1,1]);
-    drawTriangle3DUV([0.0, 0.0, 0.0,   0.0, 0.0, 1.0,   1.0, 0.0, 1.0], [1,0, 0,0, 0,1]);
+    drawTriangle3DUV([0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0], [1, 0, 0, 1, 1, 1]);
+    drawTriangle3DUV([0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0], [1, 0, 0, 0, 0, 1]);
     // left
-    drawTriangle3DUV([0.0, 0.0, 0.0,   0.0, 1.0, 1.0,   0.0, 0.0, 1.0], [1,0, 0,1, 1,1]);
-    drawTriangle3DUV([0.0, 0.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 1.0], [1,0, 0,0, 0,1]);
+    drawTriangle3DUV([0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0], [0, 0, 1, 1, 1, 0]);
+    drawTriangle3DUV([0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0], [0, 0, 0, 1, 1, 1]);
     // right
-    drawTriangle3DUV([1.0, 0.0, 0.0,   1.0, 0.0, 1.0,   1.0, 1.0, 1.0], [1,0, 0,0, 0,1]);
-    drawTriangle3DUV([1.0, 0.0, 0.0,   1.0, 1.0, 1.0,   1.0, 1.0, 0.0], [1,0, 0,1, 1,1]);
+    drawTriangle3DUV([1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0], [0, 0, 1, 1, 1, 0]);
+    drawTriangle3DUV([1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0], [0, 0, 0, 1, 1, 1]);
+}
 
-    // Front of cube
-    // drawTriangle3D([0.0, 0.0, 0.0,  1.0, 1.0, 0.0,  1.0, 0.0, 0.0]);
-    // drawTriangle3D([0.0, 0.0, 0.0,  0.0, 1.0, 0.0,  1.0, 1.0, 0.0]);
-    // Back of cube
-    // gl.uniform4f(u_FragColor, rgba[0] * 0.98, rgba[1] * 0.98, rgba[2] * 0.98, rgba[3]);
-    // drawTriangle3D([0.0, 0.0, 1.0,   1.0, 0.0, 1.0,   1.0, 1.0, 1.0]);
-    // drawTriangle3D([0.0, 0.0, 1.0,   1.0, 1.0, 1.0,   0.0, 1.0, 1.0]);
-    // Top of cube
-    // gl.uniform4f(u_FragColor, rgba[0] * 0.96, rgba[1] * 0.96, rgba[2] * 0.96, rgba[3]);
-    // drawTriangle3D([0.0, 1.0, 0.0,   1.0, 1.0, 0.0,   1.0, 1.0, 1.0]);
-    // drawTriangle3D([0.0, 1.0, 0.0,   1.0, 1.0, 1.0,   0.0, 1.0, 1.0]);
-    // Bottom of cube
-    // gl.uniform4f(u_FragColor, rgba[0] * 0.94, rgba[1] * 0.94, rgba[2] * 0.94, rgba[3]);
-    // drawTriangle3D([0.0, 0.0, 0.0,   1.0, 0.0, 1.0,   1.0, 0.0, 0.0]);
-    // drawTriangle3D([0.0, 0.0, 0.0,   0.0, 0.0, 1.0,   1.0, 0.0, 1.0]);
-    // Left of cube
-    // gl.uniform4f(u_FragColor, rgba[0] * 0.92, rgba[1] * 0.92, rgba[2] * 0.92, rgba[3]);
-    // drawTriangle3D([0.0, 0.0, 0.0,   0.0, 1.0, 1.0,   0.0, 0.0, 1.0]);
-    // drawTriangle3D([0.0, 0.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 1.0]);
-    // Right of cube
-    // gl.uniform4f(u_FragColor, rgba[0] * 0.9, rgba[1] * 0.9, rgba[2] * 0.9, rgba[3]);
-    // drawTriangle3D([1.0, 0.0, 0.0,   1.0, 0.0, 1.0,   1.0, 1.0, 1.0]);
-    // drawTriangle3D([1.0, 0.0, 0.0,   1.0, 1.0, 1.0,   1.0, 1.0, 0.0]);
+function drawCubeFast() {
+    var allVerts = [];
+
+    // front
+    allVerts = allVerts.concat([0, 0, 0, 1, 1, 0, 1, 0, 0]);
+    allVerts = allVerts.concat([0, 0, 0, 0, 1, 0, 1, 1, 0]);
+    // back
+    allVerts = allVerts.concat([0, 0, 1, 1, 0, 1, 1, 1, 1]);
+    allVerts = allVerts.concat([0, 0, 1, 1, 1, 1, 0, 1, 1]);
+    // top
+    allVerts = allVerts.concat([0, 1, 0, 1, 1, 0, 1, 1, 1]);
+    allVerts = allVerts.concat([0, 1, 0, 1, 1, 1, 0, 1, 1]);
+    // bottom
+    allVerts = allVerts.concat([0, 0, 0, 1, 0, 1, 1, 0, 0]);
+    allVerts = allVerts.concat([0, 0, 0, 0, 0, 1, 1, 0, 1]);
+    // left
+    allVerts = allVerts.concat([0, 0, 0, 0, 1, 1, 0, 0, 1]);
+    allVerts = allVerts.concat([0, 0, 0, 0, 1, 0, 0, 1, 1]);
+    // right
+    allVerts = allVerts.concat([1, 0, 0, 1, 0, 1, 1, 1, 1]);
+    allVerts = allVerts.concat([1, 0, 0, 1, 1, 1, 1, 1, 0]);
+
+    drawTriangle3D(allVerts);
 }
 
 function drawTriangle3D(vertices) {
-    var n = 3; // The number of vertices
+    var n = vertices.length / 3; // The number of vertices
 
-    if (buffer === null){
+    if (buffer === null) {
         // Create a buffer object
         buffer = gl.createBuffer();
         if (!buffer) {
@@ -110,6 +113,9 @@ function drawTriangle3D(vertices) {
     // Enable the assignment to a_Position variable
     gl.enableVertexAttribArray(a_Position);
 
+    // No uv for this
+    gl.disableVertexAttribArray(a_UV);
+
     gl.drawArrays(gl.TRIANGLES, 0, n);
 }
 
@@ -117,7 +123,7 @@ function drawTriangle3DUV(vertices, uv) {
     var n = 3; // The number of vertices
 
     // Vertices
-    if (vertexBuffer === null){
+    if (vertexBuffer === null) {
         // Create a buffer object
         vertexBuffer = gl.createBuffer();
         if (!vertexBuffer) {
@@ -138,7 +144,7 @@ function drawTriangle3DUV(vertices, uv) {
     gl.enableVertexAttribArray(a_Position);
 
     // UV
-    if (uvBuffer === null){
+    if (uvBuffer === null) {
         // Create a buffer object
         uvBuffer = gl.createBuffer();
         if (!uvBuffer) {
