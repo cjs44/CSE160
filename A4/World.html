@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>A4 Lighting</title>
+</head>
+
+<body onload="main()">
+  <canvas id="webgl" width="400" height="400">
+    Please use a browser that supports "canvas"
+  </canvas>
+  <div>
+    <p id="fps"></p>
+    <div>
+      Normal:
+      <input type="button" id="normalOn" value="On" />
+      <input type="button" id="normalOff" value="Off" />
+      <br><br>
+    </div>
+    Here are some more controls:<br>
+    W - forward<br>
+    S - backward<br>
+    A - left<br>
+    D - right<br>
+    Q - pan left<br>
+    E - pan right<br>
+    <br>
+    You can also use your mouse to move the camera around or the slider.<br>
+    The otter has animations you can control below.
+    </p>
+  </div>
+  <div>
+    <label for="angleSlide">Camera Angle:</label>
+    <input type="range" id="angleSlide" name="angleSlide" min="0" max="360" value="0" />
+  </div>
+  <br>
+  <div>
+    <label for="joint1Slide">Tail Base Joint:</label>
+    <input type="range" id="joint1Slide" name="joint1Slide" min="-35" max="25" value="0" />
+    Animation:
+    <input type="button" id="joint1On" value="On" />
+    <input type="button" id="joint1Off" value="Off" />
+    <br>
+
+    <label for="joint2Slide">Tail Middle Joint:</label>
+    <input type="range" id="joint2Slide" name="joint2Slide" min="-15" max="15" value="0" />
+    Animation:
+    <input type="button" id="joint2On" value="On" />
+    <input type="button" id="joint2Off" value="Off" />
+    <br>
+
+    <label for="joint3Slide">Tail End Joint:</label>
+    <input type="range" id="joint3Slide" name="joint3Slide" min="-15" max="15" value="0" />
+    Animation:
+    <input type="button" id="joint3On" value="On" />
+    <input type="button" id="joint3Off" value="Off" />
+    <br>
+
+    <label for="rightArmSlide">Right Arm Joint:</label>
+    <input type="range" id="rightArmSlide" name="rightArmSlide" min="-15" max="15" value="0" />
+    Animation:
+    <input type="button" id="rightArmOn" value="On" />
+    <input type="button" id="rightArmOff" value="Off" />
+    <br>
+
+    <label for="leftArmSlide">Left Arm Joint:</label>
+    <input type="range" id="leftArmSlide" name="leftArmSlide" min="-15" max="15" value="0" />
+    Animation:
+    <input type="button" id="leftArmOn" value="On" />
+    <input type="button" id="leftArmOff" value="Off" />
+    <br>
+
+    <label for="rightLegSlide">Right Leg Joint:</label>
+    <input type="range" id="rightLegSlide" name="rightLegSlide" min="-15" max="15" value="0" />
+    Animation:
+    <input type="button" id="rightLegOn" value="On" />
+    <input type="button" id="rightLegOff" value="Off" />
+    <br>
+
+    <label for="leftLegSlide">Left Leg Joint:</label>
+    <input type="range" id="leftLegSlide" name="leftLegSlide" min="-15" max="15" value="0" />
+    Animation:
+    <input type="button" id="leftLegOn" value="On" />
+    <input type="button" id="leftLegOff" value="Off" />
+  </div>
+
+  <script src="lib/webgl-utils.js"></script>
+  <script src="lib/webgl-debug.js"></script>
+  <script src="lib/cuon-utils.js"></script>
+  <script src="lib/cuon-matrix-cse160.js"></script>
+  <script src="Cube.js"></script>
+  <script src="Camera.js"></script>
+  <script src="World.js"></script>
+</body>
+
+</html>
