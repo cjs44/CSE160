@@ -53,6 +53,10 @@ let u_Sampler0;
 let u_Sampler1;
 let u_baseColor;
 let u_texColorWeight;
+let u_ModelMatrix;
+let u_GlobalRotation;
+let u_ViewMatrix;
+let u_ProjectionMatrix;
 
 // Setup WebGL with canvas
 function setupWebGL() {
@@ -486,12 +490,11 @@ function renderScene() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // drawKelpMap();
-  // drawFoodMap();
 
   // Ground
   var ground = new Cube();
   ground.color = [0.3, 0.8, 0.3, 1.0];
-  ground.textureNum = 1;
+  ground.textureNum = 1;  
   ground.texColorWeight = 1.0;
   ground.matrix.translate(0, -0.75, 0.0);
   ground.matrix.scale(10, 0, 10);
@@ -510,6 +513,7 @@ function renderScene() {
   // Single cube
   var cube = new Cube();
   cube.color = [0.5, 0.3, 0.9, 1.0];
+  cube.textureNum = 0;
   if (g_normalOn) cube.textureNum = 2;
   cube.texColorWeight = 0.0;
   cube.matrix.translate(1.0, -0.7, 0.8);

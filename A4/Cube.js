@@ -1,9 +1,9 @@
 /*
 textureNum
 0 - color texture interpolation
-1 - second image interpolation
-2 - normals
--1 - UV debug
+1 - second image interpolation (weight = 1)
+2 - normals (weight = 1)
+-1 - UV debug (weight = 1)
 other - error red
 */
 
@@ -37,7 +37,7 @@ class Cube {
         // Pass the matrix to u_ModelMatrix attribute
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
-        if (this.texColorWeight === 0) {
+        if (this.textureNum === 0 && this.texColorWeight === 0) {
             drawCubeFast();
         } else if (this.textureNum === 2) {
             drawCubeNormal();
