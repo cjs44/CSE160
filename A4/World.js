@@ -525,15 +525,16 @@ function renderScene() {
   sphere.color = [0.5, 0.3, 0.9, 1.0];
   sphere.textureNum = 0;
   if (g_normalOn) sphere.textureNum = 2;
-  sphere.matrix.translate(-1.0, 0.5, 0.8);
+  sphere.matrix.translate(-1.7, 1.0, 1.5);
   sphere.matrix.scale(0.7, 0.7, 0.7);
   sphere.render();
 
 
   // otter
-  /* var body = new Cube();
+  var body = new Cube();
   body.color = [0.25, 0.13, 0.05, 1.0];
   body.textureNum = 0;
+  if (g_normalOn) body.textureNum = 2;
   body.texColorWeight = 0.0;
   body.matrix.translate(-0.35, -0.1, 0.0);
   body.matrix.scale(0.7, 0.4, 0.4);
@@ -542,6 +543,7 @@ function renderScene() {
   var belly = new Cube();
   belly.color = [0.45, 0.30, 0.16, 1.0];
   belly.textureNum = 0;
+  if (g_normalOn) belly.textureNum = 2;
   belly.texColorWeight = 0.0;
   belly.matrix.translate(-0.3, -0.03, -0.02);
   belly.matrix.scale(0.65, 0.25, 0.02);
@@ -550,6 +552,7 @@ function renderScene() {
   var tail1 = new Cube();
   tail1.color = [0.24, 0.12, 0.04, 1.0];
   tail1.textureNum = 0;
+  if (g_normalOn) tail1.textureNum = 2;
   tail1.texColorWeight = 0.0;
   tail1.matrix.translate(-0.15, 0.25, 0.05);
   tail1.matrix.rotate(180, 0, 0, 1);
@@ -561,6 +564,7 @@ function renderScene() {
   var tail2 = new Cube();
   tail2.color = [0.23, 0.11, 0.03, 1.0];
   tail2.textureNum = 0;
+  if (g_normalOn) tail2.textureNum = 2;
   tail2.texColorWeight = 0.0;
   tail2.matrix = tailCoordMat1;
   tail2.matrix.translate(0.35, 0.025, 0.025);
@@ -571,6 +575,8 @@ function renderScene() {
 
   var tail3 = new Cube();
   tail3.color = [0.19, 0.09, 0.03, 1.0];
+  tail3.textureNum = 0;
+  if (g_normalOn) tail3.textureNum = 2;
   tail3.texColorWeight = 0.0;
   tail3.matrix = tailCoordMat2;
   tail3.matrix.translate(0.25, 0.025, 0.025);
@@ -580,6 +586,8 @@ function renderScene() {
 
   var neck = new Cube();
   neck.color = [0.24, 0.12, 0.04, 1.0];
+  neck.textureNum = 0;
+  if (g_normalOn) neck.textureNum = 2;
   neck.texColorWeight = 0.0;
   neck.matrix.translate(0.35, -0.075, 0.05);
   neck.matrix.scale(0.1, 0.35, 0.3);
@@ -587,6 +595,8 @@ function renderScene() {
 
   var head = new Cube();
   head.color = [0.45, 0.30, 0.16, 1.0];
+  head.textureNum = 0;
+  if (g_normalOn) head.textureNum = 2;
   head.texColorWeight = 0.0;
   head.matrix.translate(0.45, -0.05, 0.075);
   head.matrix.scale(0.2, 0.3, 0.3);
@@ -594,6 +604,8 @@ function renderScene() {
 
   var eye1 = new Cube();
   eye1.color = [0.0, 0.0, 0.0, 1.0];
+  eye1.textureNum = 0;
+  if (g_normalOn) eye1.textureNum = 2;
   eye1.texColorWeight = 0.0;
   eye1.matrix.translate(0.55, 0.01, 0.07);
   eye1.matrix.scale(0.03, 0.03, 0.02);
@@ -601,6 +613,8 @@ function renderScene() {
 
   var eye2 = new Cube();
   eye2.color = [0.0, 0.0, 0.0, 1.0];
+  eye2.textureNum = 0;
+  if (g_normalOn) eye2.textureNum = 2;
   eye2.texColorWeight = 0.0;
   eye2.matrix.translate(0.55, 0.14, 0.07);
   eye2.matrix.scale(0.03, 0.03, 0.02);
@@ -608,6 +622,8 @@ function renderScene() {
 
   var nose = new Cube();
   nose.color = [0.23, 0.15, 0.10, 1.0];
+  nose.textureNum = 0;
+  if (g_normalOn) nose.textureNum = 2;
   nose.texColorWeight = 0.0;
   nose.matrix.translate(0.5, 0.07, 0.07);
   nose.matrix.scale(0.05, 0.05, 0.02);
@@ -616,6 +632,8 @@ function renderScene() {
   // right arm
   var arm1 = new Cube();
   arm1.color = [0.23, 0.11, 0.03, 1.0];
+  arm1.textureNum = 0;
+  if (g_normalOn) arm1.textureNum = 2;
   arm1.texColorWeight = 0.0;
   arm1.matrix.translate(0.2, 0.19, 0.1);
   arm1.matrix.rotate(35, 0, 0, 1);
@@ -626,6 +644,8 @@ function renderScene() {
   // right leg
   var leg1 = new Cube();
   leg1.color = [0.23, 0.11, 0.03, 1.0];
+  leg1.textureNum = 0;
+  if (g_normalOn) leg1.textureNum = 2;
   leg1.texColorWeight = 0.0;
   leg1.matrix.translate(-0.3, 0.15, 0.1);
   leg1.matrix.rotate(45, 0, 0, 1);
@@ -636,6 +656,8 @@ function renderScene() {
   // left arm
   var arm2 = new Cube();
   arm2.color = [0.23, 0.11, 0.03, 1.0];
+  arm2.textureNum = 0;
+  if (g_normalOn) arm2.textureNum = 2;
   arm2.texColorWeight = 0.0;
   arm2.matrix.translate(0.32, -0.08, 0.1);
   arm2.matrix.rotate(150, 0, 0, 1);
@@ -646,12 +668,14 @@ function renderScene() {
   // left leg
   var leg2 = new Cube();
   leg2.color = [0.23, 0.11, 0.03, 1.0];
+  leg2.textureNum = 0;
+  if (g_normalOn) leg2.textureNum = 2;
   leg2.texColorWeight = 0.0;
   leg2.matrix.translate(-0.2, -0.08, 0.1);
   leg2.matrix.rotate(135, 0, 0, 1);
   leg2.matrix.rotate(g_leftLegAngle, 0, 0, 1);
   leg2.matrix.scale(0.15, 0.3, 0.2);
-  leg2.render(); */
+  leg2.render();
 
   var duration = performance.now() - startTime;
   sendTextToHTML("fps: " + Math.floor(10000 / duration) / 10, "fps");
