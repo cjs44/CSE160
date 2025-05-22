@@ -7,6 +7,7 @@ var VSHADER_SOURCE =
   attribute vec3 a_Normal;
   varying vec2 v_UV;
   varying vec3 v_Normal;
+  varying vec4 v_VertPos;
   uniform mat4 u_ModelMatrix;
   uniform mat4 u_GlobalRotation;
   uniform mat4 u_ViewMatrix;
@@ -15,6 +16,7 @@ var VSHADER_SOURCE =
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotation * u_ModelMatrix * a_Position;
     v_UV = a_UV;
     v_Normal = a_Normal;
+    v_VertPos = u_ModelMatrix * a_Position;
   }`;
 
 // Fragment shader program
@@ -22,11 +24,13 @@ var FSHADER_SOURCE =
   `precision mediump float;
   varying vec2 v_UV;
   varying vec3 v_Normal;
+  varying vec4 v_VertPos;
   uniform vec4 u_baseColor;
   uniform sampler2D u_Sampler0;
   uniform sampler2D u_Sampler1;
   uniform int u_whichTexture;
   uniform float u_texColorWeight;
+  uniform vec3 u_lightPos;
   void main() {
     vec4 texColor0 = texture2D(u_Sampler0, v_UV); // texture0
     vec4 texColor1 = texture2D(u_Sampler1, v_UV); // texture1
@@ -41,6 +45,23 @@ var FSHADER_SOURCE =
     } else {
      gl_FragColor = vec4(1, 0.2, 0.2, 1); // error
     }
+
+    // if (r < 1.0) {
+    //   gl_FragColor = vec4(1, 0, 0, 1);
+    // } else if (r < 2.0) {
+    //   gl_FragColor = vec4(0, 1, 0, 1);
+    //  }
+    
+    vec3 lightVector = u_lightPos - vec3(v_VertPos);
+    float r = length(lightVector);
+        
+    gl_FragColor = vec4(vec3(gl_FragColor)/(r*r), 1);
+
+    // vec3 L = normalize(lightVector);
+    // vec3 N = normalize(v_Normal);
+    // float nDotL = max(dot(N,L), 0.0);
+    // gl_FragColor = gl_FragColor * nDotL;
+    // gl_FragColor.a = 1.0;
   }`;
 
 // Global vars
@@ -49,6 +70,7 @@ let gl;
 let a_Position;
 let a_UV;
 let a_Normal;
+let u_lightPos;
 let u_Sampler0;
 let u_Sampler1;
 let u_baseColor;
@@ -136,6 +158,13 @@ function connectVariablesToGLSL() {
     return;
   }
 
+  // Get the storage location of u_lightPos
+  u_lightPos = gl.getUniformLocation(gl.program, 'u_lightPos');
+  if (!u_lightPos) {
+    console.log('Failed to get the storage location of u_lightPos');
+    return false;
+  }
+
   // Get the storage location of u_ModelMatrix
   u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
   if (!u_ModelMatrix) {
@@ -187,16 +216,16 @@ let g_animateRightLeg = false;
 let g_animateLeftLeg = false;
 
 let g_normalOn = false;
-let g_lightPos = [0, 1, -2];
+let g_lightPos = [0, 1, 0];
 
 function addActionsForUI() {
   // normal buttons
   document.getElementById('normalOn').onclick = function () { g_normalOn = true; };
   document.getElementById('normalOff').onclick = function () { g_normalOn = false; };
   // light sliders
-  document.getElementById('lightXSlide').addEventListener('input', function () { g_lightPos[0] = -this.value/100; renderScene(); });
-  document.getElementById('lightYSlide').addEventListener('input', function () { g_lightPos[1] = this.value/100; renderScene(); });
-  document.getElementById('lightZSlide').addEventListener('input', function () { g_lightPos[2] = this.value/100; renderScene(); });
+  document.getElementById('lightXSlide').addEventListener('input', function () { g_lightPos[0] = -this.value / 100; renderScene(); });
+  document.getElementById('lightYSlide').addEventListener('input', function () { g_lightPos[1] = this.value / 100; renderScene(); });
+  document.getElementById('lightZSlide').addEventListener('input', function () { g_lightPos[2] = this.value / 100; renderScene(); });
 
   // camera angle slider
   document.getElementById('angleSlide').addEventListener('input', function () { g_globalAngle = this.value; renderScene(); });
@@ -362,6 +391,8 @@ function updateAnimationAngles() {
   } if (g_animateLeftLeg) {
     g_leftLegAngle = 15 * Math.sin(2 * g_seconds);
   }
+
+  g_lightPos[0] = Math.cos(g_seconds); 
 }
 
 function keydown(ev) {
@@ -441,7 +472,7 @@ function renderScene() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // Light
-  // gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+  gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
 
   var light = new Cube();
   light.color = [1, 1, 0, 1];
