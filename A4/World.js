@@ -12,9 +12,11 @@ var VSHADER_SOURCE =
   uniform mat4 u_GlobalRotation;
   uniform mat4 u_ViewMatrix;
   uniform mat4 u_ProjectionMatrix;
+  // uniform mat4 u_NormalMatrix;
   void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotation * u_ModelMatrix * a_Position;
     v_UV = a_UV;
+    // v_Normal = normalize(u_NormalMatrix * a_Normal);
     v_Normal = a_Normal;
     v_VertPos = u_ModelMatrix * a_Position;
   }`;
@@ -46,6 +48,8 @@ var FSHADER_SOURCE =
      gl_FragColor = vec4(1, 0.2, 0.2, 1); // error
     }
 
+    // vec3 lightVector = u_lightPos - vec3(v_VertPos);
+    // float r = length(lightVector);
     // if (r < 1.0) {
     //   gl_FragColor = vec4(1, 0, 0, 1);
     // } else if (r < 2.0) {
@@ -53,13 +57,14 @@ var FSHADER_SOURCE =
     //  }
     
     vec3 lightVector = u_lightPos - vec3(v_VertPos);
+
     float r = length(lightVector);
-        
     gl_FragColor = vec4(vec3(gl_FragColor)/(r*r), 1);
 
     // vec3 L = normalize(lightVector);
     // vec3 N = normalize(v_Normal);
     // float nDotL = max(dot(N,L), 0.0);
+    // //gl_FragColor = vec4(vec3(nDotL), 1.0);
     // gl_FragColor = gl_FragColor * nDotL;
     // gl_FragColor.a = 1.0;
   }`;
@@ -215,8 +220,8 @@ let g_animateLeftArm = false;
 let g_animateRightLeg = false;
 let g_animateLeftLeg = false;
 
-let g_normalOn = false;
-let g_lightPos = [0, 1, 0];
+let g_normalOn = true;
+let g_lightPos = [0, 1, -1];
 
 function addActionsForUI() {
   // normal buttons
@@ -472,32 +477,24 @@ function renderScene() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // Light
-  gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+  gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], -g_lightPos[2]);
 
   var light = new Cube();
-  light.color = [1, 1, 0, 1];
+  light.color = [1, 1, 1, 1];
   light.textureNum = 0;
   light.texColorWeight = 0.0;
   light.matrix.translate(g_lightPos[0], g_lightPos[1], -g_lightPos[2]);
   light.matrix.scale(0.1, 0.1, 0.1);
   light.render();
 
-  // Ground
-  var ground = new Cube();
-  ground.color = [0.3, 0.8, 0.3, 1.0];
-  ground.textureNum = 1;
-  ground.texColorWeight = 1.0;
-  ground.matrix.translate(0, -0.75, 0.0);
-  ground.matrix.scale(10, 0, 10);
-  ground.matrix.translate(-0.5, 0, -0.5);
-  ground.render();
-
-  // Sky
+  // Big box
   var sky = new Cube();
   sky.color = [0.0, 0.5, 1.0, 1.0];
-  sky.textureNum = 0;
+  sky.textureNum = 1;
+  if (g_normalOn) sky.textureNum = 2;
   sky.texColorWeight = 1.0;
-  sky.matrix.scale(50, 50, 50);
+  sky.matrix.translate(0.75, 2, 0);
+  sky.matrix.scale(-10, -10, -10);
   sky.matrix.translate(-0.5, -0.5, -0.5);
   sky.render();
 
