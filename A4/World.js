@@ -35,6 +35,7 @@ var FSHADER_SOURCE =
   uniform vec3 u_lightPos;
   uniform vec3 u_cameraPos;
   uniform bool u_lightOn;
+  uniform vec3 u_lightColor;
   void main() {
     vec4 texColor0 = texture2D(u_Sampler0, v_UV); // texture0
     vec4 texColor1 = texture2D(u_Sampler1, v_UV); // texture1
@@ -66,15 +67,13 @@ var FSHADER_SOURCE =
     vec3 E = normalize(u_cameraPos - vec3(v_VertPos));
 
     // Specular
-    float S = pow(max(dot(E, R), 0.0), 50.0);
+    float S = pow(max(dot(E, R), 0.0), 40.0);
 
-    vec3 diffuse = newBase * nDotL;
-    vec3 ambient = newBase * 0.3;
+    vec3 diffuse = newBase * nDotL * u_lightColor;
+    vec3 ambient = newBase * 0.4;
     vec3 specular = vec3(1.0) * S;
     if (u_lightOn) {
       gl_FragColor = vec4(specular+diffuse+ambient, 1.0);
-    } else {
-      gl_FragColor = vec4(newBase, 1.0);
     }
   }`;
 
@@ -90,6 +89,7 @@ let u_cameraPos;
 let u_Sampler0;
 let u_Sampler1;
 let u_baseColor;
+let u_lightColor;
 let u_texColorWeight;
 let u_ModelMatrix;
 let u_GlobalRotation;
@@ -172,6 +172,12 @@ function connectVariablesToGLSL() {
   u_baseColor = gl.getUniformLocation(gl.program, 'u_baseColor');
   if (!u_baseColor) {
     console.log('Failed to get the storage location of u_baseColor');
+    return;
+  }
+
+  u_lightColor = gl.getUniformLocation(gl.program, 'u_lightColor');
+  if (!u_lightColor) {
+    console.log('Failed to get the storage location of u_lightColor');
     return;
   }
 
@@ -258,6 +264,9 @@ let g_normalOn = true;
 let g_lightPos = [0, 1, -1];
 let g_lightMove = true;
 let g_lightOn = true;
+let g_lightRed = 1;
+let g_lightGreen = 1;
+let g_lightBlue = 1;
 
 function addActionsForUI() {
   // normal buttons
@@ -270,6 +279,10 @@ function addActionsForUI() {
   document.getElementById('lightXSlide').addEventListener('input', function () { g_lightPos[0] = -this.value / 100; renderScene(); });
   document.getElementById('lightYSlide').addEventListener('input', function () { g_lightPos[1] = this.value / 100; renderScene(); });
   document.getElementById('lightZSlide').addEventListener('input', function () { g_lightPos[2] = this.value / 100; renderScene(); });
+  // color
+  document.getElementById('lightRed').addEventListener('input', function () { g_lightRed = this.value/255; renderScene(); });
+  document.getElementById('lightGreen').addEventListener('input', function () { g_lightGreen = this.value/255; renderScene(); });
+  document.getElementById('lightBlue').addEventListener('input', function () { g_lightBlue = this.value/255; renderScene(); });
 
   // camera angle slider
   document.getElementById('angleSlide').addEventListener('input', function () { g_globalAngle = this.value; renderScene(); });
@@ -523,6 +536,8 @@ function renderScene() {
   gl.uniform3f(u_cameraPos, camera.eye[0], camera.eye[1], camera.eye[2]);
 
   gl.uniform1i(u_lightOn, g_lightOn);
+
+  gl.uniform3f(u_lightColor, g_lightRed, g_lightGreen, g_lightBlue);
 
   var light = new Cube();
   light.color = [1, 1, 1, 1];
