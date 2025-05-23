@@ -16,7 +16,7 @@ var VSHADER_SOURCE =
   void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotation * u_ModelMatrix * a_Position;
     v_UV = a_UV;
-    // v_Normal = normalize(u_NormalMatrix * a_Normal);
+    // v_Normal = normalize(vec3(u_NormalMatrix * vec4(a_Normal, 0.0)));
     v_Normal = a_Normal;
     v_VertPos = u_ModelMatrix * a_Position;
   }`;
@@ -33,6 +33,8 @@ var FSHADER_SOURCE =
   uniform int u_whichTexture;
   uniform float u_texColorWeight;
   uniform vec3 u_lightPos;
+  uniform vec3 u_cameraPos;
+  uniform bool u_lightOn;
   void main() {
     vec4 texColor0 = texture2D(u_Sampler0, v_UV); // texture0
     vec4 texColor1 = texture2D(u_Sampler1, v_UV); // texture1
@@ -57,16 +59,26 @@ var FSHADER_SOURCE =
     //  }
     
     vec3 lightVector = u_lightPos - vec3(v_VertPos);
-
     float r = length(lightVector);
-    gl_FragColor = vec4(vec3(gl_FragColor)/(r*r), 1);
+    
+    vec3 L = normalize(lightVector);
+    vec3 N = normalize(v_Normal);
+    float nDotL = max(dot(N,L), 0.0);
 
-    // vec3 L = normalize(lightVector);
-    // vec3 N = normalize(v_Normal);
-    // float nDotL = max(dot(N,L), 0.0);
-    // //gl_FragColor = vec4(vec3(nDotL), 1.0);
-    // gl_FragColor = gl_FragColor * nDotL;
-    // gl_FragColor.a = 1.0;
+    // Reflection
+    vec3 R = reflect(-L, N);
+
+    // Eye
+    vec3 E = normalize(u_cameraPos - vec3(v_VertPos));
+
+    // Specular
+    float specular = pow(max(dot(E, R), 0.0), 5.0);
+
+    vec3 diffuse = vec3(gl_FragColor) * nDotL;
+    vec3 ambient = vec3(gl_FragColor) * 0.3;
+    if (u_lightOn) {
+      gl_FragColor = vec4(specular+diffuse+ambient, 1.0);
+    }
   }`;
 
 // Global vars
@@ -76,6 +88,8 @@ let a_Position;
 let a_UV;
 let a_Normal;
 let u_lightPos;
+let u_lightOn;
+let u_cameraPos;
 let u_Sampler0;
 let u_Sampler1;
 let u_baseColor;
@@ -84,6 +98,7 @@ let u_ModelMatrix;
 let u_GlobalRotation;
 let u_ViewMatrix;
 let u_ProjectionMatrix;
+// let u_NormalMatrix;
 
 // Setup WebGL with canvas
 function setupWebGL() {
@@ -150,6 +165,13 @@ function connectVariablesToGLSL() {
   }
 
   // Get the storage location of u_baseColor
+  u_lightOn = gl.getUniformLocation(gl.program, 'u_lightOn');
+  if (!u_lightOn) {
+    console.log('Failed to get the storage location of u_lightOn');
+    return;
+  }
+
+  // Get the storage location of u_baseColor
   u_baseColor = gl.getUniformLocation(gl.program, 'u_baseColor');
   if (!u_baseColor) {
     console.log('Failed to get the storage location of u_baseColor');
@@ -167,6 +189,13 @@ function connectVariablesToGLSL() {
   u_lightPos = gl.getUniformLocation(gl.program, 'u_lightPos');
   if (!u_lightPos) {
     console.log('Failed to get the storage location of u_lightPos');
+    return false;
+  }
+
+  // Get the storage location of u_lightPos
+  u_cameraPos = gl.getUniformLocation(gl.program, 'u_cameraPos');
+  if (!u_cameraPos) {
+    console.log('Failed to get the storage location of u_cameraPos');
     return false;
   }
 
@@ -198,6 +227,14 @@ function connectVariablesToGLSL() {
     return;
   }
 
+  // Get the storage location of u_NormalMatrix
+  // u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
+  // if (!u_NormalMatrix) {
+  //   console.log('Failed to get the storage location of u_NormalMatrix');
+  //   return;
+  // }
+
+  gl.uniform1f(u_lightOn, g_lightOn);
   // Set initial value for this matrix to identify
   var identifyM = new Matrix4();
   gl.uniformMatrix4fv(u_ModelMatrix, false, identifyM.elements);
@@ -222,11 +259,16 @@ let g_animateLeftLeg = false;
 
 let g_normalOn = true;
 let g_lightPos = [0, 1, -1];
+let g_lightMove = true;
+let g_lightOn = true;
 
 function addActionsForUI() {
   // normal buttons
   document.getElementById('normalOn').onclick = function () { g_normalOn = true; };
   document.getElementById('normalOff').onclick = function () { g_normalOn = false; };
+  // light 
+  document.getElementById('lightMove').onclick = function () { g_lightMove = !g_lightMove; };
+  document.getElementById('light').onclick = function () { g_lightOn = !g_lightOn; };
   // light sliders
   document.getElementById('lightXSlide').addEventListener('input', function () { g_lightPos[0] = -this.value / 100; renderScene(); });
   document.getElementById('lightYSlide').addEventListener('input', function () { g_lightPos[1] = this.value / 100; renderScene(); });
@@ -397,7 +439,9 @@ function updateAnimationAngles() {
     g_leftLegAngle = 15 * Math.sin(2 * g_seconds);
   }
 
-  g_lightPos[0] = Math.cos(g_seconds); 
+  if (g_lightMove) {
+    g_lightPos[0] = Math.cos(g_seconds);
+  }
 }
 
 function keydown(ev) {
@@ -465,6 +509,13 @@ function renderScene() {
   // View
   gl.uniformMatrix4fv(u_ViewMatrix, false, camera.viewMatrix.elements);
 
+  // Normal
+  // var normalMatrix = new Matrix4();
+  // normalMatrix.set(sky.matrix);
+  // normalMatrix.invert();
+  // normalMatrix.transpose();
+  // gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements);
+
   // camera angle
   // slider
   var globalRotMatrix = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
@@ -477,14 +528,19 @@ function renderScene() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // Light
-  gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], -g_lightPos[2]);
+  gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+
+  gl.uniform3f(u_cameraPos, camera.eye[0], camera.eye[1], camera.eye[2]);
+
+  gl.uniform1i(u_lightOn, g_lightOn);
 
   var light = new Cube();
   light.color = [1, 1, 1, 1];
   light.textureNum = 0;
+  // if (g_normalOn) light.textureNum = 2;
   light.texColorWeight = 0.0;
-  light.matrix.translate(g_lightPos[0], g_lightPos[1], -g_lightPos[2]);
-  light.matrix.scale(0.1, 0.1, 0.1);
+  light.matrix.translate(g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+  light.matrix.scale(-0.1, -0.1, -0.1);
   light.render();
 
   // Big box
@@ -492,9 +548,9 @@ function renderScene() {
   sky.color = [0.0, 0.5, 1.0, 1.0];
   sky.textureNum = 1;
   if (g_normalOn) sky.textureNum = 2;
-  sky.texColorWeight = 1.0;
+  sky.texColorWeight = 0.0;
   sky.matrix.translate(0.75, 2, 0);
-  sky.matrix.scale(-10, -10, -10);
+  sky.matrix.scale(-15, -15, -15);
   sky.matrix.translate(-0.5, -0.5, -0.5);
   sky.render();
 

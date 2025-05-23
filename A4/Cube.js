@@ -38,7 +38,7 @@ class Cube {
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
         if (this.textureNum === 0 && this.texColorWeight === 0) {
-            drawCubeFast();
+            drawCubeTextured();
         } else if (this.textureNum === 2) {
             drawCubeNormal();
         }
