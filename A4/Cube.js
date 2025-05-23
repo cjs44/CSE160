@@ -18,6 +18,7 @@ class Cube {
         this.type = 'cube';
         this.color = [1.0, 1.0, 1.0, 1.0];
         this.matrix = new Matrix4();
+        this.normalMatrix = new Matrix4();
         this.textureNum = 0;
         this.texColorWeight = 1.0;
     }
@@ -36,15 +37,10 @@ class Cube {
 
         // Pass the matrix to u_ModelMatrix attribute
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+        gl.uniformMatrix4fv(u_NormalMatrix, false, this.normalMatrix.elements);
 
-        if (this.textureNum === 0 && this.texColorWeight === 0) {
-            drawCubeTextured();
-        } else if (this.textureNum === 2) {
-            drawCubeNormal();
-        }
-        else {
-            drawCubeTextured();
-        }
+
+        drawCubeNormal();
     }
 }
 
@@ -116,62 +112,8 @@ function drawCubeNormal() {
         [1, 0, 0, 1, 0, 0, 1, 0, 0]);
 }
 
-function drawCubeFast() {
-    var allVerts = [];
-
-    // front
-    allVerts = allVerts.concat([0, 0, 0, 1, 1, 0, 1, 0, 0]);
-    allVerts = allVerts.concat([0, 0, 0, 0, 1, 0, 1, 1, 0]);
-    // back
-    allVerts = allVerts.concat([0, 0, 1, 1, 0, 1, 1, 1, 1]);
-    allVerts = allVerts.concat([0, 0, 1, 1, 1, 1, 0, 1, 1]);
-    // top
-    allVerts = allVerts.concat([0, 1, 0, 1, 1, 0, 1, 1, 1]);
-    allVerts = allVerts.concat([0, 1, 0, 1, 1, 1, 0, 1, 1]);
-    // bottom
-    allVerts = allVerts.concat([0, 0, 0, 1, 0, 1, 1, 0, 0]);
-    allVerts = allVerts.concat([0, 0, 0, 0, 0, 1, 1, 0, 1]);
-    // left
-    allVerts = allVerts.concat([0, 0, 0, 0, 1, 1, 0, 0, 1]);
-    allVerts = allVerts.concat([0, 0, 0, 0, 1, 0, 0, 1, 1]);
-    // right
-    allVerts = allVerts.concat([1, 0, 0, 1, 0, 1, 1, 1, 1]);
-    allVerts = allVerts.concat([1, 0, 0, 1, 1, 1, 1, 1, 0]);
-
-    drawTriangle3D(allVerts);
-}
-
-function drawTriangle3D(vertices) {
-    var n = vertices.length / 3; // The number of vertices
-
-    if (buffer === null) {
-        // Create a buffer object
-        buffer = gl.createBuffer();
-        if (!buffer) {
-            console.log('Failed to create the buffer object');
-            return -1;
-        }
-    }
-
-    // Bind the buffer object to target
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    // Write date into the buffer object
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.DYNAMIC_DRAW);
-
-    // Assign the buffer object to a_Position variable
-    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
-
-    // Enable the assignment to a_Position variable
-    gl.enableVertexAttribArray(a_Position);
-
-    // No uv for this
-    gl.disableVertexAttribArray(a_UV);
-
-    gl.drawArrays(gl.TRIANGLES, 0, n);
-}
-
 function drawTriangle3DUV(vertices, uv) {
-    var n = vertices.length/3; // The number of vertices
+    var n = vertices.length / 3; // The number of vertices
 
     // Vertices
     if (vertexBuffer === null) {
@@ -219,7 +161,7 @@ function drawTriangle3DUV(vertices, uv) {
 }
 
 function drawTriangle3DUVNormal(vertices, uv, normals) {
-    var n = vertices.length/3; // The number of vertices
+    var n = vertices.length / 3; // The number of vertices
 
     // Vertices
     if (vertexBuffer === null) {

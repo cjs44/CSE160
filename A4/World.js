@@ -12,12 +12,12 @@ var VSHADER_SOURCE =
   uniform mat4 u_GlobalRotation;
   uniform mat4 u_ViewMatrix;
   uniform mat4 u_ProjectionMatrix;
-  // uniform mat4 u_NormalMatrix;
+  uniform mat4 u_NormalMatrix;
   void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotation * u_ModelMatrix * a_Position;
     v_UV = a_UV;
-    // v_Normal = normalize(vec3(u_NormalMatrix * vec4(a_Normal, 0.0)));
-    v_Normal = a_Normal;
+    v_Normal = normalize(vec3(u_NormalMatrix * vec4(a_Normal, 0.0)));
+    // v_Normal = a_Normal;
     v_VertPos = u_ModelMatrix * a_Position;
   }`;
 
@@ -50,14 +50,8 @@ var FSHADER_SOURCE =
      gl_FragColor = vec4(1, 0.2, 0.2, 1); // error
     }
 
-    // vec3 lightVector = u_lightPos - vec3(v_VertPos);
-    // float r = length(lightVector);
-    // if (r < 1.0) {
-    //   gl_FragColor = vec4(1, 0, 0, 1);
-    // } else if (r < 2.0) {
-    //   gl_FragColor = vec4(0, 1, 0, 1);
-    //  }
-    
+    vec3 newBase = vec3(gl_FragColor);
+
     vec3 lightVector = u_lightPos - vec3(v_VertPos);
     float r = length(lightVector);
     
@@ -72,12 +66,15 @@ var FSHADER_SOURCE =
     vec3 E = normalize(u_cameraPos - vec3(v_VertPos));
 
     // Specular
-    float specular = pow(max(dot(E, R), 0.0), 5.0);
+    float S = pow(max(dot(E, R), 0.0), 50.0);
 
-    vec3 diffuse = vec3(gl_FragColor) * nDotL;
-    vec3 ambient = vec3(gl_FragColor) * 0.3;
+    vec3 diffuse = newBase * nDotL;
+    vec3 ambient = newBase * 0.3;
+    vec3 specular = vec3(1.0) * S;
     if (u_lightOn) {
       gl_FragColor = vec4(specular+diffuse+ambient, 1.0);
+    } else {
+      gl_FragColor = vec4(newBase, 1.0);
     }
   }`;
 
@@ -98,7 +95,7 @@ let u_ModelMatrix;
 let u_GlobalRotation;
 let u_ViewMatrix;
 let u_ProjectionMatrix;
-// let u_NormalMatrix;
+let u_NormalMatrix;
 
 // Setup WebGL with canvas
 function setupWebGL() {
@@ -228,11 +225,11 @@ function connectVariablesToGLSL() {
   }
 
   // Get the storage location of u_NormalMatrix
-  // u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
-  // if (!u_NormalMatrix) {
-  //   console.log('Failed to get the storage location of u_NormalMatrix');
-  //   return;
-  // }
+  u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
+  if (!u_NormalMatrix) {
+    console.log('Failed to get the storage location of u_NormalMatrix');
+    return;
+  }
 
   gl.uniform1f(u_lightOn, g_lightOn);
   // Set initial value for this matrix to identify
@@ -509,13 +506,6 @@ function renderScene() {
   // View
   gl.uniformMatrix4fv(u_ViewMatrix, false, camera.viewMatrix.elements);
 
-  // Normal
-  // var normalMatrix = new Matrix4();
-  // normalMatrix.set(sky.matrix);
-  // normalMatrix.invert();
-  // normalMatrix.transpose();
-  // gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements);
-
   // camera angle
   // slider
   var globalRotMatrix = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
@@ -562,6 +552,7 @@ function renderScene() {
   cube.texColorWeight = 0.0;
   cube.matrix.translate(1.0, -0.7, 0.8);
   cube.matrix.scale(0.9, 0.9, 0.9);
+  cube.normalMatrix.invert(cube.matrix).transpose();
   cube.render();
 
   // Sphere
@@ -582,6 +573,7 @@ function renderScene() {
   body.texColorWeight = 0.0;
   body.matrix.translate(-0.35, -0.1, 0.0);
   body.matrix.scale(0.7, 0.4, 0.4);
+  body.normalMatrix.invert(body.matrix).transpose();
   body.render();
 
   var belly = new Cube();
@@ -591,6 +583,7 @@ function renderScene() {
   belly.texColorWeight = 0.0;
   belly.matrix.translate(-0.3, -0.03, -0.02);
   belly.matrix.scale(0.65, 0.25, 0.02);
+  belly.normalMatrix.invert(belly.matrix).transpose();
   belly.render();
 
   var tail1 = new Cube();
@@ -603,6 +596,7 @@ function renderScene() {
   tail1.matrix.rotate(g_joint1Angle, 0, 0, 1);
   var tailCoordMat1 = new Matrix4(tail1.matrix);
   tail1.matrix.scale(0.45, 0.3, 0.3);
+  tail1.normalMatrix.invert(tail1.matrix).transpose();
   tail1.render();
 
   var tail2 = new Cube();
@@ -615,6 +609,7 @@ function renderScene() {
   tail2.matrix.rotate(g_joint2Angle, 0, 0, 1);
   var tailCoordMat2 = new Matrix4(tail2.matrix);
   tail2.matrix.scale(0.3, 0.25, 0.25);
+  tail2.normalMatrix.invert(tail2.matrix).transpose();
   tail2.render();
 
   var tail3 = new Cube();
@@ -626,6 +621,7 @@ function renderScene() {
   tail3.matrix.translate(0.25, 0.025, 0.025);
   tail3.matrix.rotate(g_joint3Angle, 0, 0, 1);
   tail3.matrix.scale(0.18, 0.2, 0.2);
+  tail3.normalMatrix.invert(tail3.matrix).transpose();
   tail3.render();
 
   var neck = new Cube();
@@ -635,6 +631,7 @@ function renderScene() {
   neck.texColorWeight = 0.0;
   neck.matrix.translate(0.35, -0.075, 0.05);
   neck.matrix.scale(0.1, 0.35, 0.3);
+  neck.normalMatrix.invert(neck.matrix).transpose();
   neck.render();
 
   var head = new Cube();
@@ -644,6 +641,7 @@ function renderScene() {
   head.texColorWeight = 0.0;
   head.matrix.translate(0.45, -0.05, 0.075);
   head.matrix.scale(0.2, 0.3, 0.3);
+  head.normalMatrix.invert(head.matrix).transpose();
   head.render();
 
   var eye1 = new Cube();
@@ -653,6 +651,7 @@ function renderScene() {
   eye1.texColorWeight = 0.0;
   eye1.matrix.translate(0.55, 0.01, 0.07);
   eye1.matrix.scale(0.03, 0.03, 0.02);
+  eye1.normalMatrix.invert(eye1.matrix).transpose();
   eye1.render();
 
   var eye2 = new Cube();
@@ -662,6 +661,7 @@ function renderScene() {
   eye2.texColorWeight = 0.0;
   eye2.matrix.translate(0.55, 0.14, 0.07);
   eye2.matrix.scale(0.03, 0.03, 0.02);
+  eye2.normalMatrix.invert(eye2.matrix).transpose();
   eye2.render();
 
   var nose = new Cube();
@@ -671,6 +671,7 @@ function renderScene() {
   nose.texColorWeight = 0.0;
   nose.matrix.translate(0.5, 0.07, 0.07);
   nose.matrix.scale(0.05, 0.05, 0.02);
+  nose.normalMatrix.invert(nose.matrix).transpose();
   nose.render();
 
   // right arm
@@ -683,6 +684,7 @@ function renderScene() {
   arm1.matrix.rotate(35, 0, 0, 1);
   arm1.matrix.rotate(g_rightArmAngle, 0, 0, 1);
   arm1.matrix.scale(0.15, 0.25, 0.2);
+  arm1.normalMatrix.invert(arm1.matrix).transpose();
   arm1.render();
 
   // right leg
@@ -695,6 +697,7 @@ function renderScene() {
   leg1.matrix.rotate(45, 0, 0, 1);
   leg1.matrix.rotate(g_rightLegAngle, 0, 0, 1);
   leg1.matrix.scale(0.15, 0.3, 0.2);
+  leg1.normalMatrix.invert(leg1.matrix).transpose();
   leg1.render();
 
   // left arm
@@ -707,6 +710,7 @@ function renderScene() {
   arm2.matrix.rotate(150, 0, 0, 1);
   arm2.matrix.rotate(g_leftArmAngle, 0, 0, 1);
   arm2.matrix.scale(0.15, 0.25, 0.2);
+  arm2.normalMatrix.invert(arm2.matrix).transpose();
   arm2.render();
 
   // left leg
@@ -719,6 +723,7 @@ function renderScene() {
   leg2.matrix.rotate(135, 0, 0, 1);
   leg2.matrix.rotate(g_leftLegAngle, 0, 0, 1);
   leg2.matrix.scale(0.15, 0.3, 0.2);
+  leg2.normalMatrix.invert(leg2.matrix).transpose();
   leg2.render();
 
   var duration = performance.now() - startTime;
