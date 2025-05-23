@@ -557,8 +557,9 @@ function renderScene() {
 
   // Sphere
   var sphere = new Sphere();
-  sphere.color = [0.5, 0.3, 0.9, 1.0];
+  sphere.color = [0.5, 0.5, 0.9, 1.0];
   sphere.textureNum = 0;
+  sphere.texColorWeight = 0.5;
   if (g_normalOn) sphere.textureNum = 2;
   sphere.matrix.translate(-1.7, 1.0, 1.5);
   sphere.matrix.scale(0.7, 0.7, 0.7);
